@@ -23,11 +23,33 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
+// ResourceGroup represents a group of resources.
+// +kubebuilder:validation:Enum=vc-remote
+type ResourceGroup string
+
+const (
+	ResourceGroupVcRemote ResourceGroup = "vc-remote"
+)
+
+type AllowedTrafficRule struct {
+	// source defines the source resource group of the allowed traffic.
+	Source ResourceGroup `json:"source"`
+
+	// destination defines the destination resource group of the allowed traffic.
+	// If not specified, all the traffic coming from the source resource group is allowed.
+	// +optional
+	Destination *ResourceGroup `json:"destination"`
+}
+
 // PeeringSecuritySpec defines the desired state of PeeringSecurity
 type PeeringSecuritySpec struct {
 	// blockTunnelTraffic indicates whether to block incoming traffic through the tunnel
 	// +kubebuilder:default=false
 	BlockTunnelTraffic bool `json:"blockTunnelTraffic,omitempty"`
+
+	// allowedTraffic defines the list of allowed traffic rules
+	// +optional
+	AllowedTraffic []AllowedTrafficRule `json:"allowedTraffic,omitempty"`
 }
 
 // PeeringSecurityStatus defines the observed state of PeeringSecurity.

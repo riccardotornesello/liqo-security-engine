@@ -56,6 +56,7 @@ func (r *PeeringSecurityReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 	logger := log.FromContext(ctx)
 
 	// TODO: make sure the cluster exists
+	// TODO: handle duplicates
 
 	cfg := &securityv1.PeeringSecurity{}
 	if err := r.Client.Get(ctx, req.NamespacedName, cfg); err != nil {
@@ -82,7 +83,7 @@ func (r *PeeringSecurityReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 	op, err := controllerutil.CreateOrUpdate(ctx, r.Client, &gatewayFwcfg, func() error {
 		gatewayFwcfg.SetLabels(utils.ForgeGatewayLabels(clusterID))
 
-		spec, err := utils.ForgeGatewaySpec(cfg)
+		spec, err := utils.ForgeGatewaySpec(ctx, r.Client, cfg, clusterID)
 		if err != nil {
 			return err
 		}
