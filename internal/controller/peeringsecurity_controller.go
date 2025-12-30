@@ -56,7 +56,8 @@ func (r *PeeringSecurityReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 	logger := log.FromContext(ctx)
 
 	// TODO: make sure the cluster exists
-	// TODO: handle duplicates
+	// TODO: handle the case of multiple PeeringSecurity in the same cluster
+	// TODO: cache sets used by both fabric and gateway
 
 	cfg := &securityv1.PeeringSecurity{}
 	if err := r.Client.Get(ctx, req.NamespacedName, cfg); err != nil {
@@ -73,6 +74,7 @@ func (r *PeeringSecurityReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 		return ctrl.Result{}, fmt.Errorf("unable to extract the cluster ID from the namespace %q: %w", req.Namespace, err)
 	}
 
+	// GATEWAY
 	gatewayFwcfg := networkingv1beta1.FirewallConfiguration{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      utils.ForgeGatewayResourceName(clusterID),
@@ -80,7 +82,7 @@ func (r *PeeringSecurityReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 		},
 	}
 
-	op, err := controllerutil.CreateOrUpdate(ctx, r.Client, &gatewayFwcfg, func() error {
+	gatewayOp, err := controllerutil.CreateOrUpdate(ctx, r.Client, &gatewayFwcfg, func() error {
 		gatewayFwcfg.SetLabels(utils.ForgeGatewayLabels(clusterID))
 
 		spec, err := utils.ForgeGatewaySpec(ctx, r.Client, cfg, clusterID)
@@ -95,7 +97,30 @@ func (r *PeeringSecurityReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 		return ctrl.Result{}, fmt.Errorf("unable to reconcile the gateway firewall configuration: %w", err)
 	}
 
-	logger.Info("gateway firewall configuration reconciled", "operation", op)
+	// FABRIC
+	fabricFwcfg := networkingv1beta1.FirewallConfiguration{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      utils.ForgeFabricResourceName(clusterID),
+			Namespace: req.Namespace,
+		},
+	}
+
+	fabricOp, err := controllerutil.CreateOrUpdate(ctx, r.Client, &fabricFwcfg, func() error {
+		fabricFwcfg.SetLabels(utils.ForgeFabricLabels(clusterID))
+
+		spec, err := utils.ForgeFabricSpec(ctx, r.Client, cfg, clusterID, "10.0.0.1/32") // TODO: pass cluster subnet
+		if err != nil {
+			return err
+		}
+		fabricFwcfg.Spec = *spec
+
+		return controllerutil.SetOwnerReference(cfg, &fabricFwcfg, r.Scheme)
+	})
+	if err != nil {
+		return ctrl.Result{}, fmt.Errorf("unable to reconcile the fabric firewall configuration: %w", err)
+	}
+
+	logger.Info("fabric firewall configuration reconciled", "gatewayOp", gatewayOp, "fabricOp", fabricOp)
 
 	return ctrl.Result{}, nil
 }

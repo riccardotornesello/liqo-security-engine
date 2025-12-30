@@ -139,13 +139,13 @@ func ForgeGatewaySpec(ctx context.Context, cl client.Client, cfg *securityv1.Pee
 	if err != nil {
 		return nil, fmt.Errorf("unable to get the pods offloaded to the provider cluster %q: %w", clusterID, err)
 	}
-	spec.Table.Sets = append(spec.Table.Sets, ForgePodIpsSet("offloaded", offloadedSet))
+	spec.Table.Sets = append(spec.Table.Sets, ForgePodIpsSet(string(securityv1.ResourceGroupOffloaded), offloadedSet))
 
 	fromConsumerSet, err := GetPodsFromConsumer(ctx, cl, clusterID)
 	if err != nil {
 		return nil, fmt.Errorf("unable to get the pods from the consumer cluster %q: %w", clusterID, err)
 	}
-	spec.Table.Sets = append(spec.Table.Sets, ForgePodIpsSet("from-consumer", fromConsumerSet))
+	spec.Table.Sets = append(spec.Table.Sets, ForgePodIpsSet(string(securityv1.ResourceGroupFromConsumer), fromConsumerSet))
 
 	// Add the allowed traffic rules
 	for i, rule := range cfg.Spec.AllowedTraffic {

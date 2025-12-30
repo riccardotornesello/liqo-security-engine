@@ -24,11 +24,12 @@ import (
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
 // ResourceGroup represents a group of resources.
-// +kubebuilder:validation:Enum=vc-remote
+// +kubebuilder:validation:Enum="offloaded";"from-consumer"
 type ResourceGroup string
 
 const (
-	ResourceGroupVcRemote ResourceGroup = "vc-remote"
+	ResourceGroupOffloaded    ResourceGroup = "offloaded"
+	ResourceGroupFromConsumer ResourceGroup = "from-consumer"
 )
 
 type AllowedTrafficRule struct {
@@ -46,6 +47,10 @@ type PeeringSecuritySpec struct {
 	// blockTunnelTraffic indicates whether to block incoming traffic through the tunnel
 	// +kubebuilder:default=false
 	BlockTunnelTraffic bool `json:"blockTunnelTraffic,omitempty"`
+
+	// for providers, blockOffloadedPodsTraffic indicates whether to block traffic coming from offloaded pods
+	// +kubebuilder:default=false
+	BlockOffloadedPodsTraffic bool `json:"blockOffloadedPodsTraffic,omitempty"`
 
 	// allowedTraffic defines the list of allowed traffic rules
 	// +optional
