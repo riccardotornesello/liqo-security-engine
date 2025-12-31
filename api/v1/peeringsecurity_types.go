@@ -24,12 +24,14 @@ import (
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
 // ResourceGroup represents a group of resources.
-// +kubebuilder:validation:Enum="offloaded";"from-consumer"
+// +kubebuilder:validation:Enum=local-cluster;remote-cluster;offloaded;vc-remote
 type ResourceGroup string
 
 const (
-	ResourceGroupOffloaded    ResourceGroup = "offloaded"
-	ResourceGroupFromConsumer ResourceGroup = "from-consumer"
+	ResourceGroupLocalCluster  ResourceGroup = "local-cluster"
+	ResourceGroupRemoteCluster ResourceGroup = "remote-cluster"
+	ResourceGroupOffloaded     ResourceGroup = "offloaded"
+	ResourceGroupVcRemote      ResourceGroup = "vc-remote"
 )
 
 type AllowedTrafficRule struct {

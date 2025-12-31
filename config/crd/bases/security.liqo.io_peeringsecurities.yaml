@@ -39,6 +39,38 @@ spec:
           spec:
             description: spec defines the desired state of PeeringSecurity
             properties:
+              allowedTraffic:
+                description: allowedTraffic defines the list of allowed traffic rules
+                items:
+                  properties:
+                    destination:
+                      description: |-
+                        destination defines the destination resource group of the allowed traffic.
+                        If not specified, all the traffic coming from the source resource group is allowed.
+                      enum:
+                      - local-cluster
+                      - remote-cluster
+                      - offloaded
+                      - vc-remote
+                      type: string
+                    source:
+                      description: source defines the source resource group of the
+                        allowed traffic.
+                      enum:
+                      - local-cluster
+                      - remote-cluster
+                      - offloaded
+                      - vc-remote
+                      type: string
+                  required:
+                  - source
+                  type: object
+                type: array
+              blockOffloadedPodsTraffic:
+                default: false
+                description: for providers, blockOffloadedPodsTraffic indicates whether
+                  to block traffic coming from offloaded pods
+                type: boolean
               blockTunnelTraffic:
                 default: false
                 description: blockTunnelTraffic indicates whether to block incoming

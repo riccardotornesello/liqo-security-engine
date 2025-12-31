@@ -1,4 +1,4 @@
-package utils
+package forge
 
 import (
 	"context"
@@ -45,6 +45,7 @@ func ForgeFabricLabels(clusterID string) map[string]string {
 
 func ForgeFabricSpec(ctx context.Context, cl client.Client, cfg *securityv1.PeeringSecurity, clusterID string, clusterSubnet string) (*networkingv1beta1.FirewallConfigurationSpec, error) {
 	// TODO: optimize by creatig only the required sets
+	// TODO: check BlockOffloadedPodsTraffic implementation
 
 	spec := networkingv1beta1.FirewallConfigurationSpec{
 		Table: networkingv1beta1firewall.Table{

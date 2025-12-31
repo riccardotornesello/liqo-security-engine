@@ -1,4 +1,4 @@
-package utils
+package forge
 
 import (
 	"context"
@@ -8,11 +8,11 @@ import (
 	networkingv1beta1firewall "github.com/liqotech/liqo/apis/networking/v1beta1/firewall"
 	"github.com/liqotech/liqo/pkg/firewall"
 	"github.com/liqotech/liqo/pkg/gateway"
-	tenantnamespace "github.com/liqotech/liqo/pkg/tenantNamespace"
 	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	securityv1 "github.com/riccardotornesello/liqo-security-manager/api/v1"
+	"github.com/riccardotornesello/liqo-security-manager/internal/controller/utils"
 )
 
 const (
@@ -45,35 +45,8 @@ func ForgeGatewayLabels(clusterID string) map[string]string {
 	}
 }
 
-// Forge allowed traffic rule
-func ForgeAllowedTrafficRule(rule securityv1.AllowedTrafficRule, name *string) networkingv1beta1firewall.FilterRule {
-	filterRule := networkingv1beta1firewall.FilterRule{
-		Name:   name,
-		Action: networkingv1beta1firewall.ActionAccept,
-		Match: []networkingv1beta1firewall.Match{{
-			IP: &networkingv1beta1firewall.MatchIP{
-				Value:    fmt.Sprintf("@%s", rule.Source),
-				Position: networkingv1beta1firewall.MatchPositionSrc,
-			},
-			Op: networkingv1beta1firewall.MatchOperationEq,
-		}},
-	}
-
-	if rule.Destination != nil {
-		filterRule.Match = append(filterRule.Match, networkingv1beta1firewall.Match{
-			IP: &networkingv1beta1firewall.MatchIP{
-				Value:    fmt.Sprintf("@%s", *rule.Destination),
-				Position: networkingv1beta1firewall.MatchPositionDst,
-			},
-			Op: networkingv1beta1firewall.MatchOperationEq,
-		})
-	}
-
-	return filterRule
-}
-
 func ForgeGatewaySpec(ctx context.Context, cl client.Client, cfg *securityv1.PeeringSecurity, clusterID string) (*networkingv1beta1.FirewallConfigurationSpec, error) {
-	// TODO: optimize by creatig only the required sets
+	// TODO: Update the default policy based on BlockTunnelTraffic
 
 	spec := networkingv1beta1.FirewallConfigurationSpec{
 		Table: networkingv1beta1firewall.Table{
@@ -83,7 +56,7 @@ func ForgeGatewaySpec(ctx context.Context, cl client.Client, cfg *securityv1.Pee
 			Chains: []networkingv1beta1firewall.Chain{{
 				Name:     ptr.To(gatewayChainName),
 				Hook:     ptr.To(networkingv1beta1firewall.ChainHookPostrouting),
-				Policy:   ptr.To(networkingv1beta1firewall.ChainPolicyAccept),
+				Policy:   ptr.To(networkingv1beta1firewall.ChainPolicyDrop),
 				Priority: ptr.To[networkingv1beta1firewall.ChainPriority](gatewayChainPriority),
 				Type:     ptr.To(networkingv1beta1firewall.ChainTypeFilter),
 				Rules: networkingv1beta1firewall.RulesSet{
@@ -129,42 +102,48 @@ func ForgeGatewaySpec(ctx context.Context, cl client.Client, cfg *securityv1.Pee
 		},
 	}
 
-	// Update the default policy
-	if cfg.Spec.BlockTunnelTraffic {
-		spec.Table.Chains[0].Policy = ptr.To(networkingv1beta1firewall.ChainPolicyDrop)
-	}
-
-	// Forge the sets
-	offloadedSet, err := GetPodsOffloadedToProvider(ctx, cl, clusterID)
-	if err != nil {
-		return nil, fmt.Errorf("unable to get the pods offloaded to the provider cluster %q: %w", clusterID, err)
-	}
-	spec.Table.Sets = append(spec.Table.Sets, ForgePodIpsSet(string(securityv1.ResourceGroupOffloaded), offloadedSet))
-
-	fromConsumerSet, err := GetPodsFromConsumer(ctx, cl, clusterID)
-	if err != nil {
-		return nil, fmt.Errorf("unable to get the pods from the consumer cluster %q: %w", clusterID, err)
-	}
-	spec.Table.Sets = append(spec.Table.Sets, ForgePodIpsSet(string(securityv1.ResourceGroupFromConsumer), fromConsumerSet))
-
 	// Add the allowed traffic rules
+	usedResourceGroups := make(map[securityv1.ResourceGroup]struct{})
+
 	for i, rule := range cfg.Spec.AllowedTraffic {
 		ruleName := fmt.Sprintf("allowed-traffic-%d", i)
-		filterRule := ForgeAllowedTrafficRule(rule, &ruleName)
+
+		filterRule := networkingv1beta1firewall.FilterRule{
+			Name:   ptr.To(ruleName),
+			Action: networkingv1beta1firewall.ActionAccept,
+			Match:  []networkingv1beta1firewall.Match{},
+		}
+
+		matchRules, err := utils.ResourceGroupFuncts[rule.Source].MakeMatchRule(ctx, cl, clusterID, networkingv1beta1firewall.MatchPositionDst)
+		if err != nil {
+			return nil, err
+		}
+		filterRule.Match = append(filterRule.Match, matchRules...)
+		usedResourceGroups[rule.Source] = struct{}{}
+
+		if rule.Destination != nil {
+			matchRules, err := utils.ResourceGroupFuncts[*rule.Destination].MakeMatchRule(ctx, cl, clusterID, networkingv1beta1firewall.MatchPositionSrc)
+			if err != nil {
+				return nil, err
+			}
+			filterRule.Match = append(filterRule.Match, matchRules...)
+			usedResourceGroups[*rule.Destination] = struct{}{}
+		}
+
 		spec.Table.Chains[0].Rules.FilterRules = append(spec.Table.Chains[0].Rules.FilterRules, filterRule)
+	}
+
+	// Add the required sets
+	for rg := range usedResourceGroups {
+		if utils.ResourceGroupFuncts[rg].MakeSets != nil {
+			sets, err := utils.ResourceGroupFuncts[rg].MakeSets(ctx, cl, clusterID)
+			if err != nil {
+				return nil, err
+			}
+			spec.Table.Sets = append(spec.Table.Sets, sets...)
+		}
 	}
 
 	// Return the spec
 	return &spec, nil
-}
-
-// ExtractClusterID extracts the cluster ID from the given namespace.
-func ExtractClusterID(namespace string) (string, error) {
-	// Remove the tenantnamespace.NamePrefix + "-" from the namespace to get the cluster ID
-	const prefix = tenantnamespace.NamePrefix + "-"
-
-	if len(namespace) <= len(prefix) || namespace[:len(prefix)] != prefix {
-		return "", fmt.Errorf("namespace %q does not have the expected prefix %q", namespace, prefix)
-	}
-	return namespace[len(prefix):], nil
 }

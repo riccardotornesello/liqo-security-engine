@@ -2,5 +2,6 @@ apiVersion: security.liqo.io/v1
 kind: PeeringSecurity
 metadata:
   name: example-peeringsecurity
+  namespace: liqo-tenant-rome
 spec:
-  tunnelPolicy: Allow
+  blockTunnelTraffic: true

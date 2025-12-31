@@ -30,6 +30,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	securityv1 "github.com/riccardotornesello/liqo-security-manager/api/v1"
+	"github.com/riccardotornesello/liqo-security-manager/internal/controller/forge"
 	"github.com/riccardotornesello/liqo-security-manager/internal/controller/utils"
 )
 
@@ -77,15 +78,15 @@ func (r *PeeringSecurityReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 	// GATEWAY
 	gatewayFwcfg := networkingv1beta1.FirewallConfiguration{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      utils.ForgeGatewayResourceName(clusterID),
+			Name:      forge.ForgeGatewayResourceName(clusterID),
 			Namespace: req.Namespace,
 		},
 	}
 
 	gatewayOp, err := controllerutil.CreateOrUpdate(ctx, r.Client, &gatewayFwcfg, func() error {
-		gatewayFwcfg.SetLabels(utils.ForgeGatewayLabels(clusterID))
+		gatewayFwcfg.SetLabels(forge.ForgeGatewayLabels(clusterID))
 
-		spec, err := utils.ForgeGatewaySpec(ctx, r.Client, cfg, clusterID)
+		spec, err := forge.ForgeGatewaySpec(ctx, r.Client, cfg, clusterID)
 		if err != nil {
 			return err
 		}
@@ -97,36 +98,38 @@ func (r *PeeringSecurityReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 		return ctrl.Result{}, fmt.Errorf("unable to reconcile the gateway firewall configuration: %w", err)
 	}
 
-	// FABRIC
-	fabricFwcfg := networkingv1beta1.FirewallConfiguration{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      utils.ForgeFabricResourceName(clusterID),
-			Namespace: req.Namespace,
-		},
-	}
+	// TODO: FABRIC
+	// fabricFwcfg := networkingv1beta1.FirewallConfiguration{
+	// 	ObjectMeta: metav1.ObjectMeta{
+	// 		Name:      utils.ForgeFabricResourceName(clusterID),
+	// 		Namespace: req.Namespace,
+	// 	},
+	// }
 
-	fabricOp, err := controllerutil.CreateOrUpdate(ctx, r.Client, &fabricFwcfg, func() error {
-		fabricFwcfg.SetLabels(utils.ForgeFabricLabels(clusterID))
+	// fabricOp, err := controllerutil.CreateOrUpdate(ctx, r.Client, &fabricFwcfg, func() error {
+	// 	fabricFwcfg.SetLabels(utils.ForgeFabricLabels(clusterID))
 
-		spec, err := utils.ForgeFabricSpec(ctx, r.Client, cfg, clusterID, "10.0.0.1/32") // TODO: pass cluster subnet
-		if err != nil {
-			return err
-		}
-		fabricFwcfg.Spec = *spec
+	// 	spec, err := utils.ForgeFabricSpec(ctx, r.Client, cfg, clusterID, "10.0.0.1/32") // TODO: pass cluster subnet
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	fabricFwcfg.Spec = *spec
 
-		return controllerutil.SetOwnerReference(cfg, &fabricFwcfg, r.Scheme)
-	})
-	if err != nil {
-		return ctrl.Result{}, fmt.Errorf("unable to reconcile the fabric firewall configuration: %w", err)
-	}
+	// 	return controllerutil.SetOwnerReference(cfg, &fabricFwcfg, r.Scheme)
+	// })
+	// if err != nil {
+	// 	return ctrl.Result{}, fmt.Errorf("unable to reconcile the fabric firewall configuration: %w", err)
+	// }
 
-	logger.Info("fabric firewall configuration reconciled", "gatewayOp", gatewayOp, "fabricOp", fabricOp)
+	logger.Info("fabric firewall configuration reconciled", "gatewayOp", gatewayOp) // TODO: "fabricOp", fabricOp
 
 	return ctrl.Result{}, nil
 }
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *PeeringSecurityReconciler) SetupWithManager(mgr ctrl.Manager) error {
+	// TODO: watch network changes
+
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&securityv1.PeeringSecurity{}).
 		Named("peeringsecurity").
