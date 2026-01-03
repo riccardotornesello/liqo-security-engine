@@ -1,7 +1,7 @@
 apiVersion: security.liqo.io/v1
 kind: PeeringSecurity
 metadata:
-  name: example-peeringsecurity
+  name: rome
   namespace: liqo-tenant-rome
 spec:
   rules:

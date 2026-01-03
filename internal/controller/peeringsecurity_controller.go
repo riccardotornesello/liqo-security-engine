@@ -210,6 +210,11 @@ func (r *PeeringSecurityReconciler) networkEnqueuer(ctx context.Context, obj cli
 	}
 
 	namespace := obj.GetNamespace()
+	if namespace == "liqo" {
+		// Ignore Liqo system namespace
+		return nil
+	}
+
 	clusterId, err := utils.ExtractClusterID(namespace)
 	if err != nil {
 		logger.Error(err, "unable to extract cluster ID from Network namespace", "namespace", namespace)
