@@ -20,16 +20,21 @@ import (
 	"context"
 	"fmt"
 
+	ipamv1alpha1 "github.com/liqotech/liqo/apis/ipam/v1alpha1"
 	networkingv1beta1 "github.com/liqotech/liqo/apis/networking/v1beta1"
+	"github.com/liqotech/liqo/pkg/consts"
+	vkforge "github.com/liqotech/liqo/pkg/virtualKubelet/forge"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	securityv1 "github.com/riccardotornesello/liqo-security-manager/api/v1"
@@ -161,14 +166,66 @@ func (r *PeeringSecurityReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 	return ctrl.Result{}, nil
 }
 
+// podEnqueuer enqueues the PeeringSecurity reconciliation requests for Pods.
+func (r *PeeringSecurityReconciler) podEnqueuer(ctx context.Context, obj client.Object) []ctrl.Request {
+	logger := log.FromContext(ctx)
+
+	pod, ok := obj.(*corev1.Pod)
+	if !ok {
+		logger.Error(nil, "Expected a Pod object but got a different type", "type", fmt.Sprintf("%T", obj))
+		return nil
+	}
+
+	labels := pod.GetLabels()
+
+	localPodLabel, exists := labels[consts.LocalPodLabelKey]
+	if exists && localPodLabel == consts.LocalPodLabelValue {
+		// The Pod is a shadow Pod on the consumer cluster
+		nodeName := pod.Spec.NodeName
+		if nodeName == "" {
+			return nil
+		}
+
+		logger.Info("Enqueuing Configuration for Offloaded Pod", "pod", pod.Name, "node", nodeName)
+		return []ctrl.Request{{NamespacedName: types.NamespacedName{Name: nodeName, Namespace: utils.GetClusterNamespace(nodeName)}}}
+	}
+
+	originClusterLabel, exists := labels[vkforge.LiqoOriginClusterIDKey]
+	if exists {
+		// The Pod is offloaded to the provider cluster
+		logger.Info("Enqueuing Configuration for Pod from Consumer", "pod", pod.Name, "originCluster", originClusterLabel)
+		return []ctrl.Request{{NamespacedName: types.NamespacedName{Name: originClusterLabel, Namespace: utils.GetClusterNamespace(originClusterLabel)}}}
+	}
+
+	return nil
+}
+
+func (r *PeeringSecurityReconciler) networkEnqueuer(ctx context.Context, obj client.Object) []ctrl.Request {
+	logger := log.FromContext(ctx)
+
+	_, ok := obj.(*ipamv1alpha1.Network)
+	if !ok {
+		logger.Error(nil, "Expected a Network object but got a different type", "type", fmt.Sprintf("%T", obj))
+		return nil
+	}
+
+	namespace := obj.GetNamespace()
+	clusterId, err := utils.ExtractClusterID(namespace)
+	if err != nil {
+		logger.Error(err, "unable to extract cluster ID from Network namespace", "namespace", namespace)
+		return nil
+	}
+
+	return []ctrl.Request{{NamespacedName: types.NamespacedName{Name: clusterId, Namespace: utils.GetClusterNamespace(clusterId)}}}
+}
+
 // SetupWithManager sets up the controller with the Manager.
 func (r *PeeringSecurityReconciler) SetupWithManager(mgr ctrl.Manager) error {
-	// TODO: watch network changes
-	// TODO: watch pod changes
-	// TODO: firewall configuration ownership
-
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&securityv1.PeeringSecurity{}).
+		Owns(&networkingv1beta1.FirewallConfiguration{}).
+		Watches(&corev1.Pod{}, handler.EnqueueRequestsFromMapFunc(r.podEnqueuer)).
+		Watches(&ipamv1alpha1.Network{}, handler.EnqueueRequestsFromMapFunc(r.networkEnqueuer)).
 		Named("peeringsecurity").
 		Complete(r)
 }
