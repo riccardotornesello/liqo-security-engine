@@ -1,5 +1,5 @@
 apiVersion: security.liqo.io/v1
-kind: PeeringSecurity
+kind: PeeringConnectivity
 metadata:
   name: rome
   namespace: liqo-tenant-rome

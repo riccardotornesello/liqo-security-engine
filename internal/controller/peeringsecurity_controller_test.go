@@ -30,7 +30,7 @@ import (
 	securityv1 "github.com/riccardotornesello/liqo-security-manager/api/v1"
 )
 
-var _ = Describe("PeeringSecurity Controller", func() {
+var _ = Describe("PeeringConnectivity Controller", func() {
 	Context("When reconciling a resource", func() {
 		const resourceName = "test-resource"
 
@@ -40,13 +40,13 @@ var _ = Describe("PeeringSecurity Controller", func() {
 			Name:      resourceName,
 			Namespace: "default", // TODO(user):Modify as needed
 		}
-		peeringsecurity := &securityv1.PeeringSecurity{}
+		peeringsecurity := &securityv1.PeeringConnectivity{}
 
 		BeforeEach(func() {
-			By("creating the custom resource for the Kind PeeringSecurity")
+			By("creating the custom resource for the Kind PeeringConnectivity")
 			err := k8sClient.Get(ctx, typeNamespacedName, peeringsecurity)
 			if err != nil && errors.IsNotFound(err) {
-				resource := &securityv1.PeeringSecurity{
+				resource := &securityv1.PeeringConnectivity{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      resourceName,
 						Namespace: "default",
@@ -59,11 +59,11 @@ var _ = Describe("PeeringSecurity Controller", func() {
 
 		AfterEach(func() {
 			// TODO(user): Cleanup logic after each test, like removing the resource instance.
-			resource := &securityv1.PeeringSecurity{}
+			resource := &securityv1.PeeringConnectivity{}
 			err := k8sClient.Get(ctx, typeNamespacedName, resource)
 			Expect(err).NotTo(HaveOccurred())
 
-			By("Cleanup the specific resource instance PeeringSecurity")
+			By("Cleanup the specific resource instance PeeringConnectivity")
 			Expect(k8sClient.Delete(ctx, resource)).To(Succeed())
 		})
 		It("should successfully reconcile the resource", func() {

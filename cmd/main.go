@@ -188,7 +188,7 @@ func main() {
 		Scheme:   mgr.GetScheme(),
 		Recorder: mgr.GetEventRecorderFor("peeringsecurity-controller"),
 	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "PeeringSecurity")
+		setupLog.Error(err, "unable to create controller", "controller", "PeeringConnectivity")
 		os.Exit(1)
 	}
 	// +kubebuilder:scaffold:builder

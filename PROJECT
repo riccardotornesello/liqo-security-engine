@@ -19,7 +19,7 @@ resources:
   controller: true
   domain: liqo.io
   group: security
-  kind: PeeringSecurity
+  kind: PeeringConnectivity
   path: github.com/riccardotornesello/liqo-security-manager/api/v1
   version: v1
 version: "3"

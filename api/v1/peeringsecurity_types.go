@@ -46,15 +46,15 @@ type Rule struct {
 	Destination *ResourceGroup `json:"destination,omitempty"`
 }
 
-// PeeringSecuritySpec defines the desired state of PeeringSecurity
+// PeeringSecuritySpec defines the desired state of PeeringConnectivity
 type PeeringSecuritySpec struct {
 	// rules defines the list of allowed traffic rules
 	Rules []Rule `json:"rules,omitempty"`
 }
 
-// PeeringSecurityStatus defines the observed state of PeeringSecurity.
+// PeeringSecurityStatus defines the observed state of PeeringConnectivity.
 type PeeringSecurityStatus struct {
-	// conditions represent the current state of the PeeringSecurity resource.
+	// conditions represent the current state of the PeeringConnectivity resource.
 	// Each condition has a unique type and reflects the status of a specific aspect of the resource.
 	// +patchMergeKey=type
 	// +patchStrategy=merge
@@ -62,39 +62,39 @@ type PeeringSecurityStatus struct {
 	// +listMapKey=type
 	Conditions []metav1.Condition `json:"conditions,omitempty" patchStrategy:"merge" patchMergeKey:"type"`
 
-	// ObservedGeneration is the last observed generation of the PeeringSecurity resource.
+	// ObservedGeneration is the last observed generation of the PeeringConnectivity resource.
 	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 
-// PeeringSecurity is the Schema for the peeringsecurities API
-type PeeringSecurity struct {
+// PeeringConnectivity is the Schema for the peeringsecurities API
+type PeeringConnectivity struct {
 	metav1.TypeMeta `json:",inline"`
 
 	// metadata is a standard object metadata
 	// +optional
 	metav1.ObjectMeta `json:"metadata,omitzero"`
 
-	// spec defines the desired state of PeeringSecurity
+	// spec defines the desired state of PeeringConnectivity
 	// +required
 	Spec PeeringSecuritySpec `json:"spec"`
 
-	// status defines the observed state of PeeringSecurity
+	// status defines the observed state of PeeringConnectivity
 	// +optional
 	Status PeeringSecurityStatus `json:"status,omitzero"`
 }
 
 // +kubebuilder:object:root=true
 
-// PeeringSecurityList contains a list of PeeringSecurity
+// PeeringSecurityList contains a list of PeeringConnectivity
 type PeeringSecurityList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitzero"`
-	Items           []PeeringSecurity `json:"items"`
+	Items           []PeeringConnectivity `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&PeeringSecurity{}, &PeeringSecurityList{})
+	SchemeBuilder.Register(&PeeringConnectivity{}, &PeeringSecurityList{})
 }

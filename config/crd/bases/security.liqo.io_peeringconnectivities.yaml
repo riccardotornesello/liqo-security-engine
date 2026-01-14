@@ -4,14 +4,14 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.19.0
-  name: peeringsecurities.security.liqo.io
+  name: peeringconnectivities.security.liqo.io
 spec:
   group: security.liqo.io
   names:
     kind: PeeringConnectivity
-    listKind: PeeringSecurityList
-    plural: peeringsecurities
-    singular: peeringsecurity
+    listKind: PeeringConnectivityList
+    plural: peeringconnectivities
+    singular: peeringconnectivity
   scope: Namespaced
   versions:
   - name: v1
@@ -54,6 +54,7 @@ spec:
                       - local-cluster
                       - remote-cluster
                       - offloaded
+                      - vc-local
                       - vc-remote
                       type: string
                     source:
@@ -63,6 +64,7 @@ spec:
                       - local-cluster
                       - remote-cluster
                       - offloaded
+                      - vc-local
                       - vc-remote
                       type: string
                   required:

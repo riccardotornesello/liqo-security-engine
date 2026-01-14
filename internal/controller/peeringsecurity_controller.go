@@ -43,7 +43,7 @@ import (
 	"github.com/riccardotornesello/liqo-security-manager/internal/controller/utils"
 )
 
-// PeeringSecurityReconciler reconciles a PeeringSecurity object
+// PeeringSecurityReconciler reconciles a PeeringConnectivity object
 type PeeringSecurityReconciler struct {
 	client.Client
 	Scheme   *runtime.Scheme
@@ -72,21 +72,21 @@ const (
 // move the current state of the cluster closer to the desired state.
 func (r *PeeringSecurityReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	// TODO: make sure the cluster exists
-	// TODO: handle the case of multiple PeeringSecurity in the same cluster
+	// TODO: handle the case of multiple PeeringConnectivity in the same cluster
 
 	logger := log.FromContext(ctx)
 
-	// Retrieve the PeeringSecurity resource
-	cfg := &securityv1.PeeringSecurity{}
+	// Retrieve the PeeringConnectivity resource
+	cfg := &securityv1.PeeringConnectivity{}
 	if err := r.Client.Get(ctx, req.NamespacedName, cfg); err != nil {
 		if errors.IsNotFound(err) {
-			logger.Info("missing PeeringSecurity resource, skipping reconciliation")
+			logger.Info("missing PeeringConnectivity resource, skipping reconciliation")
 			return ctrl.Result{}, nil
 		}
-		return ctrl.Result{}, fmt.Errorf("unable to get the PeeringSecurity %q: %w", req.NamespacedName, err)
+		return ctrl.Result{}, fmt.Errorf("unable to get the PeeringConnectivity %q: %w", req.NamespacedName, err)
 	}
 
-	logger.Info("reconciling PeeringSecurity")
+	logger.Info("reconciling PeeringConnectivity")
 
 	// Extract Cluster ID from Namespace
 	clusterID, err := utils.ExtractClusterID(req.Namespace)
@@ -156,7 +156,7 @@ func (r *PeeringSecurityReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 	})
 
 	if err := r.Status().Update(ctx, cfg); err != nil {
-		logger.Error(err, "failed to update PeeringSecurity status")
+		logger.Error(err, "failed to update PeeringConnectivity status")
 		return ctrl.Result{}, err
 	}
 
@@ -167,7 +167,7 @@ func (r *PeeringSecurityReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 	return ctrl.Result{}, nil
 }
 
-// podEnqueuer enqueues the PeeringSecurity reconciliation requests for Pods.
+// podEnqueuer enqueues the PeeringConnectivity reconciliation requests for Pods.
 func (r *PeeringSecurityReconciler) podEnqueuer(ctx context.Context, obj client.Object) []ctrl.Request {
 	logger := log.FromContext(ctx)
 
@@ -225,13 +225,13 @@ func (r *PeeringSecurityReconciler) networkEnqueuer(ctx context.Context, obj cli
 	return []ctrl.Request{{NamespacedName: types.NamespacedName{Name: clusterId, Namespace: utils.GetClusterNamespace(clusterId)}}}
 }
 
-// Enqueuer that triggers reconciliation to all PeeringSecurity resources
+// Enqueuer that triggers reconciliation to all PeeringConnectivity resources
 func (r *PeeringSecurityReconciler) allPeeringSecurityEnqueuer(ctx context.Context, _ client.Object) []ctrl.Request {
 	logger := log.FromContext(ctx)
 
 	peeringSecurityList := &securityv1.PeeringSecurityList{}
 	if err := r.Client.List(ctx, peeringSecurityList); err != nil {
-		logger.Error(err, "unable to list PeeringSecurity resources for enqueuing all")
+		logger.Error(err, "unable to list PeeringConnectivity resources for enqueuing all")
 		return nil
 	}
 
@@ -251,7 +251,7 @@ func (r *PeeringSecurityReconciler) allPeeringSecurityEnqueuer(ctx context.Conte
 // SetupWithManager sets up the controller with the Manager.
 func (r *PeeringSecurityReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&securityv1.PeeringSecurity{}).
+		For(&securityv1.PeeringConnectivity{}).
 		Owns(&networkingv1beta1.FirewallConfiguration{}).
 		Watches(&corev1.Pod{}, handler.EnqueueRequestsFromMapFunc(r.podEnqueuer)).
 		Watches(&ipamv1alpha1.Network{}, handler.EnqueueRequestsFromMapFunc(r.networkEnqueuer)).

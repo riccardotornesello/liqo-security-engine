@@ -44,7 +44,7 @@ func ForgeFabricLabels(clusterID string) map[string]string {
 	}
 }
 
-func ForgeFabricSpec(ctx context.Context, cl client.Client, cfg *securityv1.PeeringSecurity, clusterID string) (*networkingv1beta1.FirewallConfigurationSpec, error) {
+func ForgeFabricSpec(ctx context.Context, cl client.Client, cfg *securityv1.PeeringConnectivity, clusterID string) (*networkingv1beta1.FirewallConfigurationSpec, error) {
 	spec := networkingv1beta1.FirewallConfigurationSpec{
 		Table: networkingv1beta1firewall.Table{
 			Name:   ptr.To(fabricTableName),
