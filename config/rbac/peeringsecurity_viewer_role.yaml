@@ -11,12 +11,12 @@ metadata:
   labels:
     app.kubernetes.io/name: liqo-security-engine
     app.kubernetes.io/managed-by: kustomize
-  name: peeringsecurity-viewer-role
+  name: peeringconnectivity-viewer-role
 rules:
 - apiGroups:
   - security.liqo.io
   resources:
-  - peeringsecurities
+  - peeringconnectivities
   verbs:
   - get
   - list
@@ -24,6 +24,6 @@ rules:
 - apiGroups:
   - security.liqo.io
   resources:
-  - peeringsecurities/status
+  - peeringconnectivities/status
   verbs:
   - get

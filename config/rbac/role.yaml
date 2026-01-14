@@ -7,7 +7,7 @@ rules:
 - apiGroups:
   - security.liqo.io
   resources:
-  - peeringsecurities
+  - peeringconnectivities
   verbs:
   - create
   - delete
@@ -19,13 +19,13 @@ rules:
 - apiGroups:
   - security.liqo.io
   resources:
-  - peeringsecurities/finalizers
+  - peeringconnectivities/finalizers
   verbs:
   - update
 - apiGroups:
   - security.liqo.io
   resources:
-  - peeringsecurities/status
+  - peeringconnectivities/status
   verbs:
   - get
   - patch

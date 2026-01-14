@@ -22,7 +22,7 @@ resources:
 # default, aiding admins in cluster management. Those roles are
 # not used by the liqo-security-engine itself. You can comment the following lines
 # if you do not want those helpers be installed with your Project.
-- peeringsecurity_admin_role.yaml
-- peeringsecurity_editor_role.yaml
-- peeringsecurity_viewer_role.yaml
+- peeringconnectivity_admin_role.yaml
+- peeringconnectivity_editor_role.yaml
+- peeringconnectivity_viewer_role.yaml
 

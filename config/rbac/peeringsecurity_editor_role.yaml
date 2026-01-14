@@ -11,12 +11,12 @@ metadata:
   labels:
     app.kubernetes.io/name: liqo-security-engine
     app.kubernetes.io/managed-by: kustomize
-  name: peeringsecurity-editor-role
+  name: peeringconnectivity-editor-role
 rules:
 - apiGroups:
   - security.liqo.io
   resources:
-  - peeringsecurities
+  - peeringconnectivities
   verbs:
   - create
   - delete
@@ -28,6 +28,6 @@ rules:
 - apiGroups:
   - security.liqo.io
   resources:
-  - peeringsecurities/status
+  - peeringconnectivities/status
   verbs:
   - get

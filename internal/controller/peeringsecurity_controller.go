@@ -43,8 +43,8 @@ import (
 	"github.com/riccardotornesello/liqo-security-manager/internal/controller/utils"
 )
 
-// PeeringSecurityReconciler reconciles a PeeringConnectivity object
-type PeeringSecurityReconciler struct {
+// PeeringConnectivityReconciler reconciles a PeeringConnectivity object
+type PeeringConnectivityReconciler struct {
 	client.Client
 	Scheme   *runtime.Scheme
 	Recorder record.EventRecorder
@@ -64,13 +64,22 @@ const (
 	EventReasonSynced         = "Synced"
 )
 
-// +kubebuilder:rbac:groups=security.liqo.io,resources=peeringsecurities,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=security.liqo.io,resources=peeringsecurities/status,verbs=get;update;patch
-// +kubebuilder:rbac:groups=security.liqo.io,resources=peeringsecurities/finalizers,verbs=update
+// +kubebuilder:rbac:groups=security.liqo.io,resources=peeringconnectivities,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=security.liqo.io,resources=peeringconnectivities/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=security.liqo.io,resources=peeringconnectivities/finalizers,verbs=update
+
+// NewPeeringConnectivityReconciler creates a new PeeringConnectivityReconciler
+func NewPeeringConnectivityReconciler(mgr ctrl.Manager) *PeeringConnectivityReconciler {
+	return &PeeringConnectivityReconciler{
+		Client:   mgr.GetClient(),
+		Scheme:   mgr.GetScheme(),
+		Recorder: mgr.GetEventRecorderFor("peeringconnectivity-controller"),
+	}
+}
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
-func (r *PeeringSecurityReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *PeeringConnectivityReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	// TODO: make sure the cluster exists
 	// TODO: handle the case of multiple PeeringConnectivity in the same cluster
 
@@ -91,7 +100,7 @@ func (r *PeeringSecurityReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 	// Extract Cluster ID from Namespace
 	clusterID, err := utils.ExtractClusterID(req.Namespace)
 	if err != nil {
-		r.Recorder.Eventf(cfg, corev1.EventTypeWarning, EventReasonReconcileError, "Failed to extract cluster ID: %v", err)
+		r.Recorder.Eventf(cfg, corev1.EventTypeWarning, EventReasonReconcileError, "Failed to extract cluster ID: %w", err)
 
 		meta.SetStatusCondition(&cfg.Status.Conditions, metav1.Condition{
 			Type:    ConditionTypeReady,
@@ -128,7 +137,7 @@ func (r *PeeringSecurityReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 	if err != nil {
 		logger.Error(err, "unable to reconcile the fabric firewall configuration")
 
-		r.Recorder.Eventf(cfg, corev1.EventTypeWarning, EventReasonReconcileError, "Failed to reconcile fabric: %v", err)
+		r.Recorder.Eventf(cfg, corev1.EventTypeWarning, EventReasonReconcileError, "Failed to reconcile fabric: %w", err)
 
 		meta.SetStatusCondition(&cfg.Status.Conditions, metav1.Condition{
 			Type:    ConditionTypeReady,
@@ -168,7 +177,7 @@ func (r *PeeringSecurityReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 }
 
 // podEnqueuer enqueues the PeeringConnectivity reconciliation requests for Pods.
-func (r *PeeringSecurityReconciler) podEnqueuer(ctx context.Context, obj client.Object) []ctrl.Request {
+func (r *PeeringConnectivityReconciler) podEnqueuer(ctx context.Context, obj client.Object) []ctrl.Request {
 	logger := log.FromContext(ctx)
 
 	pod, ok := obj.(*corev1.Pod)
@@ -201,7 +210,7 @@ func (r *PeeringSecurityReconciler) podEnqueuer(ctx context.Context, obj client.
 	return nil
 }
 
-func (r *PeeringSecurityReconciler) networkEnqueuer(ctx context.Context, obj client.Object) []ctrl.Request {
+func (r *PeeringConnectivityReconciler) networkEnqueuer(ctx context.Context, obj client.Object) []ctrl.Request {
 	logger := log.FromContext(ctx)
 
 	_, ok := obj.(*ipamv1alpha1.Network)
@@ -226,7 +235,7 @@ func (r *PeeringSecurityReconciler) networkEnqueuer(ctx context.Context, obj cli
 }
 
 // Enqueuer that triggers reconciliation to all PeeringConnectivity resources
-func (r *PeeringSecurityReconciler) allPeeringSecurityEnqueuer(ctx context.Context, _ client.Object) []ctrl.Request {
+func (r *PeeringConnectivityReconciler) allPeeringConnectivityEnqueuer(ctx context.Context, _ client.Object) []ctrl.Request {
 	logger := log.FromContext(ctx)
 
 	peeringConnectivityList := &securityv1.PeeringConnectivityList{}
@@ -249,13 +258,13 @@ func (r *PeeringSecurityReconciler) allPeeringSecurityEnqueuer(ctx context.Conte
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *PeeringSecurityReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *PeeringConnectivityReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&securityv1.PeeringConnectivity{}).
 		Owns(&networkingv1beta1.FirewallConfiguration{}).
 		Watches(&corev1.Pod{}, handler.EnqueueRequestsFromMapFunc(r.podEnqueuer)).
 		Watches(&ipamv1alpha1.Network{}, handler.EnqueueRequestsFromMapFunc(r.networkEnqueuer)).
-		Watches(&offloadingv1beta1.NamespaceOffloading{}, handler.EnqueueRequestsFromMapFunc(r.allPeeringSecurityEnqueuer)).
-		Named("peeringsecurity").
+		Watches(&offloadingv1beta1.NamespaceOffloading{}, handler.EnqueueRequestsFromMapFunc(r.allPeeringConnectivityEnqueuer)).
+		Named("peeringconnectivity").
 		Complete(r)
 }

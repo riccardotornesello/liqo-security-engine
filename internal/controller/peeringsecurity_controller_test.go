@@ -40,11 +40,11 @@ var _ = Describe("PeeringConnectivity Controller", func() {
 			Name:      resourceName,
 			Namespace: "default", // TODO(user):Modify as needed
 		}
-		peeringsecurity := &securityv1.PeeringConnectivity{}
+		peeringconnectivity := &securityv1.PeeringConnectivity{}
 
 		BeforeEach(func() {
 			By("creating the custom resource for the Kind PeeringConnectivity")
-			err := k8sClient.Get(ctx, typeNamespacedName, peeringsecurity)
+			err := k8sClient.Get(ctx, typeNamespacedName, peeringconnectivity)
 			if err != nil && errors.IsNotFound(err) {
 				resource := &securityv1.PeeringConnectivity{
 					ObjectMeta: metav1.ObjectMeta{
@@ -68,9 +68,10 @@ var _ = Describe("PeeringConnectivity Controller", func() {
 		})
 		It("should successfully reconcile the resource", func() {
 			By("Reconciling the created resource")
-			controllerReconciler := &PeeringSecurityReconciler{
-				Client: k8sClient,
-				Scheme: k8sClient.Scheme(),
+			controllerReconciler := &PeeringConnectivityReconciler{
+				Client:   k8sClient,
+				Scheme:   k8sClient.Scheme(),
+				Recorder: k8sMgr.GetEventRecorderFor("peeringconnectivity-controller"),
 			}
 
 			_, err := controllerReconciler.Reconcile(ctx, reconcile.Request{
