@@ -1,23 +1,61 @@
+# Example: Provider Cluster Security Policy
+#
+# This example demonstrates a security policy for a provider cluster (e.g., "rome")
+# that accepts offloaded workloads from a consumer cluster. The provider cluster
+# runs the actual pods that were offloaded from the consumer.
+#
+# Scenario:
+# - Provider cluster "rome" accepts offloaded workloads from a consumer cluster
+# - Offloaded pods run on the provider cluster's infrastructure
+# - Consumer cluster needs to communicate with these offloaded pods
+#
+# Security Requirements:
+# - Allow bidirectional communication between remote cluster and offloaded pods
+# - Deny all other traffic from offloaded pods (prevent lateral movement)
+# - Deny all other traffic from remote cluster (default deny)
+#
+# This implements a strict security posture where offloaded workloads can only
+# communicate with their originating cluster, preventing unauthorized access
+# to provider cluster resources.
+
 apiVersion: security.liqo.io/v1
 kind: PeeringConnectivity
 metadata:
+  # Name should match the cluster ID of the peered cluster
   name: rome
+  # Namespace follows the pattern: liqo-tenant-<cluster-id>
   namespace: liqo-tenant-rome
 spec:
   rules:
+    # Rule 1: Allow traffic from remote cluster to offloaded pods
+    # This enables the consumer cluster to access the workloads it offloaded.
+    # Example: Consumer cluster pods can call APIs hosted on offloaded pods.
     - source:
         group: remote-cluster
       destination:
         group: offloaded
       action: "allow"
+    
+    # Rule 2: Allow traffic from offloaded pods back to remote cluster
+    # This enables offloaded workloads to respond to the consumer cluster.
+    # Example: Offloaded pods can fetch data from services in the consumer cluster.
     - source:
         group: offloaded
       destination:
         group: remote-cluster
       action: "allow"
+    
+    # Rule 3: Deny all other traffic from offloaded pods
+    # This prevents offloaded workloads from accessing provider cluster resources
+    # or communicating with other offloaded workloads (lateral movement).
+    # This is a critical security control for multi-tenant environments.
     - source:
         group: offloaded
       action: "deny"
+    
+    # Rule 4: Deny all other traffic from remote cluster
+    # This prevents the consumer cluster from accessing provider cluster resources
+    # beyond the offloaded workloads. Provides isolation between clusters.
     - source:
         group: remote-cluster
       action: "deny"

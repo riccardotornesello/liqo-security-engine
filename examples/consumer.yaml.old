@@ -1,0 +1,13 @@
+apiVersion: security.liqo.io/v1
+kind: PeeringConnectivity
+metadata:
+  name: milan
+  namespace: liqo-tenant-milan
+spec:
+  rules:
+    - source:
+        group: vc-remote
+      action: "allow"
+    - source:
+        group: remote-cluster
+      action: "deny"

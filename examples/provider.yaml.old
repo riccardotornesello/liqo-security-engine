@@ -1,0 +1,23 @@
+apiVersion: security.liqo.io/v1
+kind: PeeringConnectivity
+metadata:
+  name: rome
+  namespace: liqo-tenant-rome
+spec:
+  rules:
+    - source:
+        group: remote-cluster
+      destination:
+        group: offloaded
+      action: "allow"
+    - source:
+        group: offloaded
+      destination:
+        group: remote-cluster
+      action: "allow"
+    - source:
+        group: offloaded
+      action: "deny"
+    - source:
+        group: remote-cluster
+      action: "deny"

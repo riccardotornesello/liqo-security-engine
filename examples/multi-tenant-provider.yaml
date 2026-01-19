@@ -1,0 +1,78 @@
+# Example: Provider with Multiple Consumers
+#
+# This example demonstrates a security policy for a provider cluster that
+# accepts workloads from multiple consumer clusters with proper isolation.
+#
+# Use Case:
+# - Multi-tenant provider cluster serving multiple consumer organizations
+# - Each consumer's offloaded workloads should be isolated from other consumers
+# - Workloads can only communicate with their originating cluster
+#
+# Note: In practice, you would create one PeeringConnectivity resource per
+# consumer cluster, each in its own liqo-tenant-<cluster-id> namespace.
+# This example shows the policy for one consumer; replicate for each consumer.
+
+apiVersion: security.liqo.io/v1
+kind: PeeringConnectivity
+metadata:
+  name: consumer-a
+  namespace: liqo-tenant-consumer-a
+spec:
+  rules:
+    # Allow consumer A to access its offloaded pods
+    - source:
+        group: remote-cluster
+      destination:
+        group: offloaded
+      action: "allow"
+    
+    # Allow consumer A's offloaded pods to respond
+    - source:
+        group: offloaded
+      destination:
+        group: remote-cluster
+      action: "allow"
+    
+    # Deny offloaded pods from accessing:
+    # - Provider local resources
+    # - Other consumers' offloaded workloads
+    # - Any external resources
+    - source:
+        group: offloaded
+      action: "deny"
+    
+    # Deny consumer from accessing provider resources
+    - source:
+        group: remote-cluster
+      action: "deny"
+
+---
+# Repeat for consumer B with its own namespace
+apiVersion: security.liqo.io/v1
+kind: PeeringConnectivity
+metadata:
+  name: consumer-b
+  namespace: liqo-tenant-consumer-b
+spec:
+  rules:
+    # Same rules as consumer A, but applied in consumer B's namespace
+    # This ensures isolation between consumer A and consumer B workloads
+    - source:
+        group: remote-cluster
+      destination:
+        group: offloaded
+      action: "allow"
+    
+    - source:
+        group: offloaded
+      destination:
+        group: remote-cluster
+      action: "allow"
+    
+    - source:
+        group: offloaded
+      action: "deny"
+    
+    - source:
+        group: remote-cluster
+      action: "deny"

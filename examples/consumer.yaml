@@ -1,13 +1,40 @@
+# Example: Consumer Cluster Security Policy
+#
+# This example demonstrates a security policy for a consumer cluster (e.g., "milan")
+# that is peering with a provider cluster. The consumer cluster offloads workloads
+# to the provider cluster and maintains shadow pods that represent the offloaded workloads.
+#
+# Scenario:
+# - Consumer cluster "milan" offloads workloads to a provider cluster
+# - Shadow pods (vc-remote) run on the consumer cluster
+# - Real offloaded pods run on the provider cluster
+#
+# Security Requirements:
+# - Allow communication from shadow pods (vc-remote) to any destination
+# - Deny all traffic from the remote cluster directly (not through virtual cluster)
+#
+# This ensures that only the virtual cluster abstraction can communicate,
+# preventing direct access from the remote cluster.
+
 apiVersion: security.liqo.io/v1
 kind: PeeringConnectivity
 metadata:
+  # Name should match the cluster ID of the peered cluster
   name: milan
+  # Namespace follows the pattern: liqo-tenant-<cluster-id>
   namespace: liqo-tenant-milan
 spec:
   rules:
+    # Rule 1: Allow all traffic from shadow pods (vc-remote)
+    # These are the local shadow pods that represent workloads offloaded to the provider.
+    # They need to communicate freely as they act as proxies.
     - source:
         group: vc-remote
       action: "allow"
+    
+    # Rule 2: Deny all direct traffic from the remote cluster
+    # This prevents the remote cluster from accessing resources directly,
+    # ensuring all communication goes through the virtual cluster abstraction.
     - source:
         group: remote-cluster
       action: "deny"

@@ -1,0 +1,40 @@
+# Example: Allow Local Cluster Communication Only
+#
+# This example demonstrates a restrictive policy that only allows communication
+# within the local cluster while denying all cross-cluster traffic.
+#
+# Use Case:
+# - Testing environment where you want to prevent cross-cluster communication
+# - Security-sensitive workloads that should not communicate with remote clusters
+# - Gradual rollout where you start with deny-all and selectively open access
+#
+# This policy is useful when you want the Liqo peering to be established but
+# enforce complete network isolation between clusters.
+
+apiVersion: security.liqo.io/v1
+kind: PeeringConnectivity
+metadata:
+  name: isolated-cluster
+  namespace: liqo-tenant-isolated-cluster
+spec:
+  rules:
+    # Allow all local cluster communication
+    - source:
+        group: local-cluster
+      destination:
+        group: local-cluster
+      action: "allow"
+    
+    # Deny traffic from remote cluster to local
+    - source:
+        group: remote-cluster
+      destination:
+        group: local-cluster
+      action: "deny"
+    
+    # Deny traffic from local cluster to remote
+    - source:
+        group: local-cluster
+      destination:
+        group: remote-cluster
+      action: "deny"

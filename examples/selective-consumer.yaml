@@ -1,0 +1,51 @@
+# Example: Selective Virtual Cluster Access
+#
+# This example demonstrates a policy for a consumer cluster that allows
+# fine-grained control over which resource groups can communicate.
+#
+# Use Case:
+# - Allow local pods in offloaded namespaces (vc-local) to communicate
+# - Allow shadow pods (vc-remote) to communicate
+# - Prevent direct communication from the remote cluster
+# - Prevent local-cluster pods (not in offloaded namespaces) from accessing remote
+#
+# This provides granular control useful in multi-tenant scenarios where only
+# specific namespaces should have cross-cluster access.
+
+apiVersion: security.liqo.io/v1
+kind: PeeringConnectivity
+metadata:
+  name: selective-consumer
+  namespace: liqo-tenant-selective-consumer
+spec:
+  rules:
+    # Allow local pods in offloaded namespaces to communicate with remote
+    - source:
+        group: vc-local
+      destination:
+        group: remote-cluster
+      action: "allow"
+    
+    # Allow remote to respond to vc-local pods
+    - source:
+        group: remote-cluster
+      destination:
+        group: vc-local
+      action: "allow"
+    
+    # Allow shadow pods (vc-remote) full access
+    - source:
+        group: vc-remote
+      action: "allow"
+    
+    # Deny all other remote cluster access
+    - source:
+        group: remote-cluster
+      action: "deny"
+    
+    # Deny local-cluster (non-offloaded namespace) access to remote
+    - source:
+        group: local-cluster
+      destination:
+        group: remote-cluster
+      action: "deny"
