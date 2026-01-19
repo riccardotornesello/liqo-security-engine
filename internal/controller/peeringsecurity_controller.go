@@ -102,10 +102,7 @@ func NewPeeringConnectivityReconciler(mgr ctrl.Manager) *PeeringConnectivityReco
 // Return values:
 //   - (ctrl.Result{}, nil): Reconciliation succeeded, no requeue needed
 //   - (ctrl.Result{}, err): Reconciliation failed, will be requeued automatically
-//   - (ctrl.Result{Requeue: true}, nil): Reconciliation succeeded, but requeue immediately
-//   - (ctrl.Result{RequeueAfter: duration}, nil): Reconciliation succeeded, requeue after duration
 func (r *PeeringConnectivityReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-
 	logger := log.FromContext(ctx)
 
 	// Retrieve the PeeringConnectivity resource

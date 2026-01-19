@@ -5,9 +5,10 @@ All notable changes to the Liqo Security Engine will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [Unreleased] ([0.1.0] - Initial Development)
 
 ### Added
+
 - Comprehensive code documentation for all Go source files
 - Professional README with architecture overview and examples
 - CONTRIBUTING.md with development guidelines
@@ -16,36 +17,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced examples with detailed comments and use cases
 - Examples README with usage scenarios and best practices
 - Additional example configurations for various deployment patterns
-
-### Changed
-- Improved code comments throughout the codebase
-- Enhanced API documentation with detailed field descriptions
-- Updated package-level documentation for all packages
-
-### Documentation
-- Added comprehensive README with:
-  - Project overview and key features
-  - Architecture diagram
-  - Installation instructions (Helm and kubectl)
-  - Quick start guide
-  - Resource groups reference table
-  - Multiple examples
-  - API reference
-  - Troubleshooting guide
-  - Development guide
-  - Project structure
-  - Roadmap
-- Created examples for:
-  - Consumer cluster configuration
-  - Provider cluster configuration
-  - Isolated cluster setup
-  - Selective access control
-  - Open policy for development
-  - Multi-tenant provider setup
-
-## [0.1.0] - Initial Development
-
-### Added
 - PeeringConnectivity Custom Resource Definition (CRD)
 - Controller for reconciling PeeringConnectivity resources
 - Support for five resource groups:
@@ -68,7 +39,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unit and integration tests
 - End-to-end test framework
 
+### Changed
+
+- Improved code comments throughout the codebase
+- Enhanced API documentation with detailed field descriptions
+- Updated package-level documentation for all packages
+
+### Documentation
+
+- Added comprehensive README with:
+  - Project overview and key features
+  - Architecture diagram
+  - Installation instructions (Helm and kubectl)
+  - Quick start guide
+  - Resource groups reference table
+  - Multiple examples
+  - API reference
+  - Troubleshooting guide
+  - Development guide
+  - Project structure
+  - Roadmap
+- Created examples for:
+  - Consumer cluster configuration
+  - Provider cluster configuration
+  - Isolated cluster setup
+  - Selective access control
+  - Open policy for development
+  - Multi-tenant provider setup
+
 ### Technical Details
+
 - Built with Kubebuilder v4.10.1
 - Go 1.24.6 support
 - Kubernetes 1.11.3+ compatibility

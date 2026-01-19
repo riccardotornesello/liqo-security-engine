@@ -21,6 +21,8 @@ import (
 //
 // Shadow pods are identified by the liqo.io/local-pod label and are scheduled
 // on a virtual node representing the provider cluster.
+//
+// For consumer only!
 func GetPodsOffloadedToProvider(ctx context.Context, cl client.Client, providerClusterID string) ([]corev1.Pod, error) {
 	// TODO: optimize by adding labels in liqo when offloading pods (see TODOS.md)
 
@@ -50,6 +52,8 @@ func GetPodsOffloadedToProvider(ctx context.Context, cl client.Client, providerC
 //
 // These pods are identified by the liqo.io/origin-cluster-id label which contains
 // the cluster ID of the consumer cluster that offloaded them.
+//
+// For provider only!
 func GetPodsFromConsumer(ctx context.Context, cl client.Client, consumerClusterID string) ([]corev1.Pod, error) {
 	podList := &corev1.PodList{}
 	if err := cl.List(ctx, podList, client.MatchingLabels{

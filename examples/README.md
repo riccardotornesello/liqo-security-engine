@@ -4,14 +4,10 @@ This directory contains example PeeringConnectivity configurations for various u
 
 ## Quick Reference
 
-| Example | Use Case | Description |
-|---------|----------|-------------|
-| [consumer.yaml](consumer.yaml) | Consumer cluster | Allow shadow pods, deny direct remote access |
+| Example                        | Use Case         | Description                                                    |
+| ------------------------------ | ---------------- | -------------------------------------------------------------- |
+| [consumer.yaml](consumer.yaml) | Consumer cluster | Allow shadow pods, deny direct remote access                   |
 | [provider.yaml](provider.yaml) | Provider cluster | Isolate offloaded workloads, allow bidirectional with consumer |
-| [isolated-cluster.yaml](isolated-cluster.yaml) | Network isolation | Prevent all cross-cluster communication |
-| [selective-consumer.yaml](selective-consumer.yaml) | Fine-grained control | Selective access for virtual cluster components |
-| [open-policy.yaml](open-policy.yaml) | Development/testing | Allow all communication (not for production) |
-| [multi-tenant-provider.yaml](multi-tenant-provider.yaml) | Multi-tenant provider | Isolate multiple consumers on same provider |
 
 ## Understanding Resource Groups
 
@@ -42,39 +38,18 @@ Before using these examples, understand the resource groups:
    kubectl describe peeringconnectivity <your-cluster-id> -n liqo-tenant-<your-cluster-id>
    ```
 
-## Example Scenarios
-
-### Scenario 1: Consumer-Provider Setup
+## Example Scenario: Consumer-Provider Setup
 
 **Consumer side** (consumer.yaml):
+
 - Allows shadow pods to communicate freely
 - Denies direct access from remote cluster
 
 **Provider side** (provider.yaml):
+
 - Allows bidirectional communication between offloaded pods and remote cluster
 - Denies offloaded pods from accessing provider resources
 - Denies remote cluster from accessing provider resources
-
-### Scenario 2: Development Environment
-
-Use `open-policy.yaml` to allow unrestricted communication for:
-- Initial connectivity testing
-- Development environments
-- Trusted internal clusters
-
-### Scenario 3: Multi-Tenant Provider
-
-Use `multi-tenant-provider.yaml` when:
-- One provider serves multiple consumer clusters
-- Each consumer needs isolated workload execution
-- Prevent cross-tenant communication
-
-### Scenario 4: Isolated Clusters
-
-Use `isolated-cluster.yaml` to:
-- Establish Liqo peering without network communication
-- Test security policies before opening access
-- Implement strict security boundaries
 
 ## Customizing Examples
 
@@ -91,12 +66,12 @@ spec:
       destination:
         group: offloaded
       action: "allow"
-    
+
     # Allow specific source to any destination
     - source:
         group: vc-remote
       action: "allow"
-    
+
     # Deny traffic to specific destination
     - destination:
         group: local-cluster
@@ -116,7 +91,7 @@ spec:
       destination:
         group: remote-cluster
       action: "allow"
-    
+
     # More general rules should come later
     - source:
         group: vc-remote
@@ -128,16 +103,19 @@ spec:
 After applying a PeeringConnectivity resource:
 
 1. **Check the resource status**:
+
    ```bash
    kubectl get peeringconnectivity -A
    ```
 
 2. **Verify FirewallConfiguration was created**:
+
    ```bash
    kubectl get firewallconfiguration -A
    ```
 
 3. **Test connectivity**:
+
    ```bash
    # Deploy test pods in different resource groups
    # Try to communicate between them
@@ -168,6 +146,7 @@ After applying a PeeringConnectivity resource:
 ### Unable to Determine Resource Group
 
 Some pods may not fall into the expected resource groups:
+
 - Check pod labels (liqo.io/local-pod, liqo.io/origin-cluster-id)
 - Verify namespace has NamespaceOffloading resource (for vc-local)
 - Check pod scheduling node (for vc-remote)

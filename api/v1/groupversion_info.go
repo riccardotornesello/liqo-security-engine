@@ -16,8 +16,8 @@ limitations under the License.
 
 // Package v1 contains API Schema definitions for the security v1 API group.
 //
-// This package defines the PeeringConnectivity custom resource, which enables
-// fine-grained network security policies for Liqo multi-cluster environments.
+// This package defines the security custom resources, which enables
+// fine-grained network connectivity policies for Liqo multi-cluster environments.
 // The API allows users to control traffic flow between different resource groups
 // in a peering scenario, such as local cluster pods, remote cluster pods,
 // offloaded workloads, and virtual cluster components.

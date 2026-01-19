@@ -1,11 +1,11 @@
 # Example: Provider Cluster Security Policy
 #
-# This example demonstrates a security policy for a provider cluster (e.g., "rome")
-# that accepts offloaded workloads from a consumer cluster. The provider cluster
+# This example demonstrates a security policy for a provider cluster
+# that accepts offloaded workloads from a consumer cluster (e.g., "rome"). The provider cluster
 # runs the actual pods that were offloaded from the consumer.
 #
 # Scenario:
-# - Provider cluster "rome" accepts offloaded workloads from a consumer cluster
+# - Provider cluster accepts offloaded workloads from a consumer cluster ("rome")
 # - Offloaded pods run on the provider cluster's infrastructure
 # - Consumer cluster needs to communicate with these offloaded pods
 #
@@ -35,7 +35,7 @@ spec:
       destination:
         group: offloaded
       action: "allow"
-    
+
     # Rule 2: Allow traffic from offloaded pods back to remote cluster
     # This enables offloaded workloads to respond to the consumer cluster.
     # Example: Offloaded pods can fetch data from services in the consumer cluster.
@@ -44,7 +44,7 @@ spec:
       destination:
         group: remote-cluster
       action: "allow"
-    
+
     # Rule 3: Deny all other traffic from offloaded pods
     # This prevents offloaded workloads from accessing provider cluster resources
     # or communicating with other offloaded workloads (lateral movement).
@@ -52,7 +52,7 @@ spec:
     - source:
         group: offloaded
       action: "deny"
-    
+
     # Rule 4: Deny all other traffic from remote cluster
     # This prevents the consumer cluster from accessing provider cluster resources
     # beyond the offloaded workloads. Provides isolation between clusters.

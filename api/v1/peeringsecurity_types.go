@@ -22,7 +22,8 @@ import (
 
 // ResourceGroup represents a group of resources in a Liqo peering environment.
 // It categorizes different types of pods and network entities to enable fine-grained
-// security policy management across cluster boundaries.
+// network security policy management across cluster boundaries.
+//
 // +kubebuilder:validation:Enum=local-cluster;remote-cluster;offloaded;vc-local;vc-remote
 type ResourceGroup string
 
@@ -33,16 +34,20 @@ const (
 	ResourceGroupRemoteCluster ResourceGroup = "remote-cluster"
 	// ResourceGroupOffloaded represents pods that have been offloaded from a consumer cluster
 	// and are running on a provider cluster.
+	// For provider only!
 	ResourceGroupOffloaded ResourceGroup = "offloaded"
-	// ResourceGroupVcLocal represents local pods in namespaces that are configured for offloading
-	// (virtual cluster local).
+	// ResourceGroupVcLocal (virtual cluster local) represents local pods in namespaces that are configured
+	// for offloading but are still running in the local cluster.
+	// For consumer only!
 	ResourceGroupVcLocal ResourceGroup = "vc-local"
-	// ResourceGroupVcRemote represents shadow pods on the consumer cluster that represent
-	// pods offloaded to a provider cluster (virtual cluster remote).
+	// ResourceGroupVcRemote (virtual cluster remote) represents shadow pods on the consumer cluster
+	// that represent pods offloaded to a provider cluster .
+	// For consumer only!
 	ResourceGroupVcRemote ResourceGroup = "vc-remote"
 )
 
 // Action defines the action to take when a firewall rule matches network traffic.
+//
 // +kubebuilder:validation:Enum=allow;deny
 type Action string
 
@@ -55,6 +60,7 @@ const (
 
 // Party defines a participant in a network connectivity rule.
 // A party can represent either the source or destination of network traffic.
+//
 // +kubebuilder:validation:ExactlyOneOf=group
 type Party struct {
 	// Group defines the resource group of this party.
@@ -63,17 +69,17 @@ type Party struct {
 }
 
 // Rule defines a network connectivity rule for peering scenarios.
-// Rules specify which traffic should be allowed or denied based on source
-// and destination resource groups.
+// Rules specify how the traffic should flow based on source
+// and destination parties and the action to be taken.
 type Rule struct {
 	// Action defines whether to allow or deny the traffic matching this rule.
 	Action Action `json:"action,omitempty"`
 
-	// Source defines the source resource group for the traffic.
+	// Source defines the source party for the traffic.
 	// If omitted, the rule applies to traffic from any source.
 	Source *Party `json:"source,omitempty"`
 
-	// Destination defines the destination resource group for the traffic.
+	// Destination defines the destination party for the traffic.
 	// If omitted, the rule applies to traffic to any destination.
 	Destination *Party `json:"destination,omitempty"`
 }
@@ -94,6 +100,7 @@ type PeeringConnectivityStatus struct {
 	// Conditions represent the current state of the PeeringConnectivity resource.
 	// Each condition has a unique type and reflects the status of a specific aspect
 	// of the resource, such as whether firewall rules have been successfully synced.
+	//
 	// +patchMergeKey=type
 	// +patchStrategy=merge
 	// +listType=map

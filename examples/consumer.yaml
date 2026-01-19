@@ -1,17 +1,17 @@
 # Example: Consumer Cluster Security Policy
 #
-# This example demonstrates a security policy for a consumer cluster (e.g., "milan")
-# that is peering with a provider cluster. The consumer cluster offloads workloads
+# This example demonstrates a security policy for a consumer cluster
+# that is peering with a provider cluster (e.g., "milan"). The consumer cluster offloads workloads
 # to the provider cluster and maintains shadow pods that represent the offloaded workloads.
 #
 # Scenario:
-# - Consumer cluster "milan" offloads workloads to a provider cluster
+# - Consumer cluster offloads workloads to a provider cluster ("milan")
 # - Shadow pods (vc-remote) run on the consumer cluster
 # - Real offloaded pods run on the provider cluster
 #
 # Security Requirements:
-# - Allow communication from shadow pods (vc-remote) to any destination
-# - Deny all traffic from the remote cluster directly (not through virtual cluster)
+# - Allow communication from offloaded pods to the consumer
+# - Deny all traffic from the remote cluster directly
 #
 # This ensures that only the virtual cluster abstraction can communicate,
 # preventing direct access from the remote cluster.
@@ -27,14 +27,13 @@ spec:
   rules:
     # Rule 1: Allow all traffic from shadow pods (vc-remote)
     # These are the local shadow pods that represent workloads offloaded to the provider.
-    # They need to communicate freely as they act as proxies.
+    # They need to communicate freely.
     - source:
         group: vc-remote
       action: "allow"
-    
+
     # Rule 2: Deny all direct traffic from the remote cluster
-    # This prevents the remote cluster from accessing resources directly,
-    # ensuring all communication goes through the virtual cluster abstraction.
+    # This prevents the remote cluster from accessing resources directly.
     - source:
         group: remote-cluster
       action: "deny"

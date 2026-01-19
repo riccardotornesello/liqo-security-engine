@@ -42,6 +42,9 @@ func ForgeFabricResourceName(clusterID string) string {
 // These labels identify the configuration as a fabric-level security configuration
 // that targets all nodes in the cluster.
 func ForgeFabricLabels(clusterID string) map[string]string {
+	// TODO: label liqo-managed?
+	// TODO: create new category?
+
 	// Labels identify this as a fabric-level firewall configuration targeting all nodes.
 	return map[string]string{
 		firewall.FirewallCategoryTargetKey:    fabric.FirewallCategoryTargetValue,
@@ -110,14 +113,14 @@ func ForgeFabricSpec(ctx context.Context, cl client.Client, cfg *securityv1.Peer
 		}
 
 		// Add match rules for the source (if specified).
-		sourceRules, err := ForgeMatchRule(rule.Source, networkingv1beta1firewall.MatchPositionSrc, usedResourceGroups)
+		sourceRules, err := ForgeMatchRule(ctx, rule.Source, networkingv1beta1firewall.MatchPositionSrc, usedResourceGroups)
 		if err != nil {
 			return nil, err
 		}
 		filterRule.Match = append(filterRule.Match, sourceRules...)
 
 		// Add match rules for the destination (if specified).
-		destRules, err := ForgeMatchRule(rule.Destination, networkingv1beta1firewall.MatchPositionDst, usedResourceGroups)
+		destRules, err := ForgeMatchRule(ctx, rule.Destination, networkingv1beta1firewall.MatchPositionDst, usedResourceGroups)
 		if err != nil {
 			return nil, err
 		}
@@ -146,7 +149,7 @@ func ForgeFabricSpec(ctx context.Context, cl client.Client, cfg *securityv1.Peer
 // ForgeMatchRule creates firewall match rules for a party (source or destination).
 // It translates a high-level Party specification into low-level nftables match rules
 // and tracks which resource groups are used so their sets can be created.
-func ForgeMatchRule(party *securityv1.Party, position networkingv1beta1firewall.MatchPosition, usedResourceGroups map[securityv1.ResourceGroup]struct{}) (matchRules []networkingv1beta1firewall.Match, err error) {
+func ForgeMatchRule(ctx context.Context, party *securityv1.Party, position networkingv1beta1firewall.MatchPosition, usedResourceGroups map[securityv1.ResourceGroup]struct{}) (matchRules []networkingv1beta1firewall.Match, err error) {
 	if party == nil {
 		// No party specified, so no match rules needed (matches all).
 		return nil, nil
@@ -154,11 +157,7 @@ func ForgeMatchRule(party *securityv1.Party, position networkingv1beta1firewall.
 
 	if party.Group != nil {
 		// Generate match rules for the specified resource group.
-		// Note: We use context.TODO() and pass nil/empty string here because the match rule
-		// generation for most resource groups doesn't require the context or cluster ID
-		// at this stage. The actual context and cluster ID are used when creating sets.
-		// This is a known limitation tracked in TODOS.md.
-		matchRules, err = utils.ResourceGroupFuncts[*party.Group].MakeMatchRule(context.TODO(), nil, "", position)
+		matchRules, err = utils.ResourceGroupFuncts[*party.Group].MakeMatchRule(ctx, nil, "", position)
 		if err != nil {
 			return nil, err
 		}
