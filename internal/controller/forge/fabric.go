@@ -55,7 +55,7 @@ func ForgeFabricSpec(ctx context.Context, cl client.Client, cfg *securityv1.Peer
 				Hook:     ptr.To(networkingv1beta1firewall.ChainHookPostrouting),
 				Policy:   ptr.To(networkingv1beta1firewall.ChainPolicyAccept),
 				Priority: ptr.To[networkingv1beta1firewall.ChainPriority](fabricChainPriority),
-				Type:     ptr.To(networkingv1beta1firewall.ChainTypeFilter),
+				Type:     networkingv1beta1firewall.ChainTypeFilter,
 				Rules: networkingv1beta1firewall.RulesSet{
 					FilterRules: []networkingv1beta1firewall.FilterRule{
 						{
@@ -93,23 +93,17 @@ func ForgeFabricSpec(ctx context.Context, cl client.Client, cfg *securityv1.Peer
 			filterRule.Action = networkingv1beta1firewall.ActionDrop
 		}
 
-		if rule.Source != nil {
-			matchRules, err := utils.ResourceGroupFuncts[*rule.Source].MakeMatchRule(ctx, cl, clusterID, networkingv1beta1firewall.MatchPositionSrc)
-			if err != nil {
-				return nil, err
-			}
-			filterRule.Match = append(filterRule.Match, matchRules...)
-			usedResourceGroups[*rule.Source] = struct{}{}
+		sourceRules, err := ForgeMatchRule(rule.Source, networkingv1beta1firewall.MatchPositionSrc, usedResourceGroups)
+		if err != nil {
+			return nil, err
 		}
+		filterRule.Match = append(filterRule.Match, sourceRules...)
 
-		if rule.Destination != nil {
-			matchRules, err := utils.ResourceGroupFuncts[*rule.Destination].MakeMatchRule(ctx, cl, clusterID, networkingv1beta1firewall.MatchPositionDst)
-			if err != nil {
-				return nil, err
-			}
-			filterRule.Match = append(filterRule.Match, matchRules...)
-			usedResourceGroups[*rule.Destination] = struct{}{}
+		destRules, err := ForgeMatchRule(rule.Destination, networkingv1beta1firewall.MatchPositionDst, usedResourceGroups)
+		if err != nil {
+			return nil, err
 		}
+		filterRule.Match = append(filterRule.Match, destRules...)
 
 		spec.Table.Chains[0].Rules.FilterRules = append(spec.Table.Chains[0].Rules.FilterRules, filterRule)
 	}
@@ -127,4 +121,20 @@ func ForgeFabricSpec(ctx context.Context, cl client.Client, cfg *securityv1.Peer
 
 	// Return the spec
 	return &spec, nil
+}
+
+func ForgeMatchRule(party *securityv1.Party, position networkingv1beta1firewall.MatchPosition, usedResourceGroups map[securityv1.ResourceGroup]struct{}) (matchRules []networkingv1beta1firewall.Match, err error) {
+	if party == nil {
+		return nil, nil
+	}
+
+	if party.Group != nil {
+		matchRules, err = utils.ResourceGroupFuncts[*party.Group].MakeMatchRule(context.TODO(), nil, "", position)
+		if err != nil {
+			return nil, err
+		}
+		usedResourceGroups[*party.Group] = struct{}{}
+	}
+
+	return matchRules, nil
 }

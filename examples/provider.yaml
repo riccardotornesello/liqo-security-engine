@@ -5,13 +5,19 @@ metadata:
   namespace: liqo-tenant-rome
 spec:
   rules:
-    - source: remote-cluster
-      destination: offloaded
+    - source:
+        group: remote-cluster
+      destination:
+        group: offloaded
       action: "allow"
-    - source: offloaded
-      destination: remote-cluster
+    - source:
+        group: offloaded
+      destination:
+        group: remote-cluster
       action: "allow"
-    - source: offloaded
+    - source:
+        group: offloaded
       action: "deny"
-    - source: remote-cluster
+    - source:
+        group: remote-cluster
       action: "deny"

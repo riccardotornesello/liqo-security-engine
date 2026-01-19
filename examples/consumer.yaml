@@ -5,7 +5,9 @@ metadata:
   namespace: liqo-tenant-milan
 spec:
   rules:
-    - source: vc-remote
+    - source:
+        group: vc-remote
       action: "allow"
-    - source: remote-cluster
+    - source:
+        group: remote-cluster
       action: "deny"

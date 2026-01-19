@@ -44,16 +44,23 @@ const (
 	ActionDeny  Action = "deny"
 )
 
+// Party defines a connectivity party.
+// +kubebuilder:validation:ExactlyOneOf=group
+type Party struct {
+	// group defines the resource group of the party.
+	Group *ResourceGroup `json:"group,omitempty"`
+}
+
 // Rule defines a peering connectivity rule.
 type Rule struct {
 	// action defines whether to allow or deny the traffic.
 	Action Action `json:"action,omitempty"`
 
 	// source defines the source resource group of the allowed traffic.
-	Source *ResourceGroup `json:"source,omitempty"`
+	Source *Party `json:"source,omitempty"`
 
 	// destination defines the destination resource group of the allowed traffic.
-	Destination *ResourceGroup `json:"destination,omitempty"`
+	Destination *Party `json:"destination,omitempty"`
 }
 
 // PeeringConnectivitySpec defines the desired state of PeeringConnectivity

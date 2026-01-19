@@ -54,23 +54,37 @@ spec:
                     destination:
                       description: destination defines the destination resource group
                         of the allowed traffic.
-                      enum:
-                      - local-cluster
-                      - remote-cluster
-                      - offloaded
-                      - vc-local
-                      - vc-remote
-                      type: string
+                      properties:
+                        group:
+                          description: group defines the resource group of the party.
+                          enum:
+                          - local-cluster
+                          - remote-cluster
+                          - offloaded
+                          - vc-local
+                          - vc-remote
+                          type: string
+                      type: object
+                      x-kubernetes-validations:
+                      - message: exactly one of the fields in [group] must be set
+                        rule: '[has(self.group)].filter(x,x==true).size() == 1'
                     source:
                       description: source defines the source resource group of the
                         allowed traffic.
-                      enum:
-                      - local-cluster
-                      - remote-cluster
-                      - offloaded
-                      - vc-local
-                      - vc-remote
-                      type: string
+                      properties:
+                        group:
+                          description: group defines the resource group of the party.
+                          enum:
+                          - local-cluster
+                          - remote-cluster
+                          - offloaded
+                          - vc-local
+                          - vc-remote
+                          type: string
+                      type: object
+                      x-kubernetes-validations:
+                      - message: exactly one of the fields in [group] must be set
+                        rule: '[has(self.group)].filter(x,x==true).size() == 1'
                   type: object
                 type: array
             type: object
