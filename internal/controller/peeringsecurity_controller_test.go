@@ -41,10 +41,10 @@ var _ = Describe("PeeringConnectivity Controller", func() {
 		)
 
 		var (
-			ctx             context.Context
-			namespace       string
-			namespacedName  types.NamespacedName
-			reconciler      *PeeringConnectivityReconciler
+			ctx            context.Context
+			namespace      string
+			namespacedName types.NamespacedName
+			reconciler     *PeeringConnectivityReconciler
 		)
 
 		BeforeEach(func() {

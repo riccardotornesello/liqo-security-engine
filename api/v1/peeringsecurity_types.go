@@ -60,8 +60,6 @@ const (
 
 // Party defines a participant in a network connectivity rule.
 // A party can represent either the source or destination of network traffic.
-//
-// +kubebuilder:validation:ExactlyOneOf=group
 type Party struct {
 	// Group defines the resource group of this party.
 	// It identifies which set of pods or resources this party represents.

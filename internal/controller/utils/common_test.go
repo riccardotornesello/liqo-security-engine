@@ -244,4 +244,3 @@ var _ = Describe("Sets Utilities", func() {
 		})
 	})
 })
-
