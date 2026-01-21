@@ -24,6 +24,7 @@ import (
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"github.com/riccardotornesello/liqo-security-manager/internal/controller/utils"
 
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
@@ -32,8 +33,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
-
-	securityv1 "github.com/riccardotornesello/liqo-security-manager/api/v1"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -61,14 +60,17 @@ var _ = BeforeSuite(func() {
 	ctx, cancel = context.WithCancel(context.TODO())
 
 	var err error
-	err = securityv1.AddToScheme(scheme.Scheme)
-	Expect(err).NotTo(HaveOccurred())
+
+	utils.RegisterScheme(scheme.Scheme)
 
 	// +kubebuilder:scaffold:scheme
 
 	By("bootstrapping test environment")
 	testEnv = &envtest.Environment{
-		CRDDirectoryPaths:     []string{filepath.Join("..", "..", "config", "crd", "bases")},
+		CRDDirectoryPaths: []string{
+			filepath.Join("..", "..", "config", "crd", "bases"),
+			filepath.Join("..", "..", "..", "liqo", "deployments", "liqo", "charts", "liqo-crds", "crds"),
+		},
 		ErrorIfCRDPathMissing: true,
 	}
 

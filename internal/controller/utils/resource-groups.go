@@ -13,10 +13,10 @@ import (
 
 // groupFuncts defines the functions needed to implement a resource group.
 // Each resource group needs to provide:
-// - MakeSets: creates firewall sets (collections of IP addresses) for the group.
-//   May be nil if the resource group uses CIDR-based matching instead of sets.
-// - MakeMatchRule: creates firewall match rules for the group.
-//   Required for all resource groups.
+//   - MakeSets: creates firewall sets (collections of IP addresses) for the group.
+//     May be nil if the resource group uses CIDR-based matching instead of sets.
+//   - MakeMatchRule: creates firewall match rules for the group.
+//     Required for all resource groups.
 type groupFuncts struct {
 	MakeSets      func(ctx context.Context, cl client.Client, clusterID string) ([]networkingv1beta1firewall.Set, error)
 	MakeMatchRule func(ctx context.Context, cl client.Client, clusterID string, position networkingv1beta1firewall.MatchPosition) ([]networkingv1beta1firewall.Match, error)

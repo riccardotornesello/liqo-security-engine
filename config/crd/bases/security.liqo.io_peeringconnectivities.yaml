@@ -17,8 +17,12 @@ spec:
   - name: v1
     schema:
       openAPIV3Schema:
-        description: PeeringConnectivity is the Schema for the peeringconnectivities
-          API
+        description: |-
+          PeeringConnectivity is the Schema for the peeringconnectivities API.
+          It represents a security policy configuration for controlling network connectivity
+          in a Liqo multi-cluster peering scenario. Each PeeringConnectivity resource is
+          typically created in a tenant namespace (e.g., liqo-tenant-<cluster-id>) and
+          defines firewall rules that control traffic between different resource groups.
         properties:
           apiVersion:
             description: |-
@@ -38,25 +42,37 @@ spec:
           metadata:
             type: object
           spec:
-            description: spec defines the desired state of PeeringConnectivity
+            description: |-
+              Spec defines the desired state of PeeringConnectivity.
+              It contains the security rules to be enforced.
             properties:
               rules:
-                description: rules defines the list of allowed traffic rules
+                description: |-
+                  Rules defines the ordered list of network traffic rules.
+                  Rules are evaluated in order, and the first matching rule determines
+                  whether traffic is allowed or denied.
                 items:
-                  description: Rule defines a peering connectivity rule.
+                  description: |-
+                    Rule defines a network connectivity rule for peering scenarios.
+                    Rules specify how the traffic should flow based on source
+                    and destination parties and the action to be taken.
                   properties:
                     action:
-                      description: action defines whether to allow or deny the traffic.
+                      description: Action defines whether to allow or deny the traffic
+                        matching this rule.
                       enum:
                       - allow
                       - deny
                       type: string
                     destination:
-                      description: destination defines the destination resource group
-                        of the allowed traffic.
+                      description: |-
+                        Destination defines the destination party for the traffic.
+                        If omitted, the rule applies to traffic to any destination.
                       properties:
                         group:
-                          description: group defines the resource group of the party.
+                          description: |-
+                            Group defines the resource group of this party.
+                            It identifies which set of pods or resources this party represents.
                           enum:
                           - local-cluster
                           - remote-cluster
@@ -65,15 +81,15 @@ spec:
                           - vc-remote
                           type: string
                       type: object
-                      x-kubernetes-validations:
-                      - message: exactly one of the fields in [group] must be set
-                        rule: '[has(self.group)].filter(x,x==true).size() == 1'
                     source:
-                      description: source defines the source resource group of the
-                        allowed traffic.
+                      description: |-
+                        Source defines the source party for the traffic.
+                        If omitted, the rule applies to traffic from any source.
                       properties:
                         group:
-                          description: group defines the resource group of the party.
+                          description: |-
+                            Group defines the resource group of this party.
+                            It identifies which set of pods or resources this party represents.
                           enum:
                           - local-cluster
                           - remote-cluster
@@ -82,19 +98,19 @@ spec:
                           - vc-remote
                           type: string
                       type: object
-                      x-kubernetes-validations:
-                      - message: exactly one of the fields in [group] must be set
-                        rule: '[has(self.group)].filter(x,x==true).size() == 1'
                   type: object
                 type: array
             type: object
           status:
-            description: status defines the observed state of PeeringConnectivity
+            description: |-
+              Status defines the observed state of PeeringConnectivity.
+              It reflects the current status of rule enforcement.
             properties:
               conditions:
                 description: |-
-                  conditions represent the current state of the PeeringConnectivity resource.
-                  Each condition has a unique type and reflects the status of a specific aspect of the resource.
+                  Conditions represent the current state of the PeeringConnectivity resource.
+                  Each condition has a unique type and reflects the status of a specific aspect
+                  of the resource, such as whether firewall rules have been successfully synced.
                 items:
                   description: Condition contains details for one aspect of the current
                     state of this API Resource.
@@ -154,8 +170,9 @@ spec:
                 - type
                 x-kubernetes-list-type: map
               observedGeneration:
-                description: ObservedGeneration is the last observed generation of
-                  the PeeringConnectivity resource.
+                description: |-
+                  ObservedGeneration is the last observed generation of the PeeringConnectivity resource.
+                  It is used to track whether the status reflects the latest spec changes.
                 format: int64
                 type: integer
             type: object
