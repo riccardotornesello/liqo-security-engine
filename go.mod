@@ -1,6 +1,6 @@
 module github.com/riccardotornesello/liqo-security-manager
 
-go 1.25.5
+go 1.25.6
 
 require (
 	github.com/liqotech/liqo v1.0.3

@@ -121,7 +121,7 @@ func (r *PeeringConnectivityReconciler) Reconcile(ctx context.Context, req ctrl.
 	// The namespace should follow the pattern: liqo-tenant-<cluster-id>
 	clusterID, err := utils.ExtractClusterID(req.Namespace)
 	if err != nil {
-		r.Recorder.Eventf(cfg, corev1.EventTypeWarning, EventReasonReconcileError, "Failed to extract cluster ID: %w", err)
+		r.Recorder.Eventf(cfg, corev1.EventTypeWarning, EventReasonReconcileError, "Failed to extract cluster ID: %v", err)
 
 		meta.SetStatusCondition(&cfg.Status.Conditions, metav1.Condition{
 			Type:    ConditionTypeReady,
@@ -165,7 +165,7 @@ func (r *PeeringConnectivityReconciler) Reconcile(ctx context.Context, req ctrl.
 	if err != nil {
 		logger.Error(err, "unable to reconcile the fabric firewall configuration")
 
-		r.Recorder.Eventf(cfg, corev1.EventTypeWarning, EventReasonReconcileError, "Failed to reconcile fabric: %w", err)
+		r.Recorder.Eventf(cfg, corev1.EventTypeWarning, EventReasonReconcileError, "Failed to reconcile fabric: %v", err)
 
 		meta.SetStatusCondition(&cfg.Status.Conditions, metav1.Condition{
 			Type:    ConditionTypeReady,

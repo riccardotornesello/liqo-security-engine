@@ -28,12 +28,7 @@ import (
 	// to ensure that exec-entrypoint and run can make use of them.
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
-	ipamv1alpha1 "github.com/liqotech/liqo/apis/ipam/v1alpha1"
-	networkingv1beta1 "github.com/liqotech/liqo/apis/networking/v1beta1"
-	offloadingv1beta1 "github.com/liqotech/liqo/apis/offloading/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
-	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
-	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
@@ -41,8 +36,8 @@ import (
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
-	securityv1 "github.com/riccardotornesello/liqo-security-manager/api/v1"
 	"github.com/riccardotornesello/liqo-security-manager/internal/controller"
+	"github.com/riccardotornesello/liqo-security-manager/internal/controller/utils"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -54,11 +49,7 @@ var (
 // init registers all the required schemes for the controller.
 // This includes core Kubernetes types, Liqo types, and the security API types.
 func init() {
-	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
-	utilruntime.Must(networkingv1beta1.AddToScheme(scheme))
-	utilruntime.Must(ipamv1alpha1.AddToScheme(scheme))
-	utilruntime.Must(offloadingv1beta1.AddToScheme(scheme))
-	utilruntime.Must(securityv1.AddToScheme(scheme))
+	utils.RegisterScheme(scheme)
 	// +kubebuilder:scaffold:scheme
 }
 

@@ -5,6 +5,7 @@ package forge
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	networkingv1beta1 "github.com/liqotech/liqo/apis/networking/v1beta1"
@@ -113,14 +114,14 @@ func ForgeFabricSpec(ctx context.Context, cl client.Client, cfg *securityv1.Peer
 		}
 
 		// Add match rules for the source (if specified).
-		sourceRules, err := ForgeMatchRule(ctx, rule.Source, networkingv1beta1firewall.MatchPositionSrc, usedResourceGroups)
+		sourceRules, err := ForgeMatchRule(ctx, cl, rule.Source, clusterID, networkingv1beta1firewall.MatchPositionSrc, usedResourceGroups)
 		if err != nil {
 			return nil, err
 		}
 		filterRule.Match = append(filterRule.Match, sourceRules...)
 
 		// Add match rules for the destination (if specified).
-		destRules, err := ForgeMatchRule(ctx, rule.Destination, networkingv1beta1firewall.MatchPositionDst, usedResourceGroups)
+		destRules, err := ForgeMatchRule(ctx, cl, rule.Destination, clusterID, networkingv1beta1firewall.MatchPositionDst, usedResourceGroups)
 		if err != nil {
 			return nil, err
 		}
@@ -142,6 +143,9 @@ func ForgeFabricSpec(ctx context.Context, cl client.Client, cfg *securityv1.Peer
 		}
 	}
 
+	test, _ := json.Marshal(spec)
+	fmt.Printf("Fabric Spec: %s\n", test)
+
 	// Return the complete FirewallConfiguration spec.
 	return &spec, nil
 }
@@ -149,7 +153,7 @@ func ForgeFabricSpec(ctx context.Context, cl client.Client, cfg *securityv1.Peer
 // ForgeMatchRule creates firewall match rules for a party (source or destination).
 // It translates a high-level Party specification into low-level nftables match rules
 // and tracks which resource groups are used so their sets can be created.
-func ForgeMatchRule(ctx context.Context, party *securityv1.Party, position networkingv1beta1firewall.MatchPosition, usedResourceGroups map[securityv1.ResourceGroup]struct{}) (matchRules []networkingv1beta1firewall.Match, err error) {
+func ForgeMatchRule(ctx context.Context, cl client.Client, party *securityv1.Party, clusterID string, position networkingv1beta1firewall.MatchPosition, usedResourceGroups map[securityv1.ResourceGroup]struct{}) (matchRules []networkingv1beta1firewall.Match, err error) {
 	if party == nil {
 		// No party specified, so no match rules needed (matches all).
 		return nil, nil
@@ -157,7 +161,7 @@ func ForgeMatchRule(ctx context.Context, party *securityv1.Party, position netwo
 
 	if party.Group != nil {
 		// Generate match rules for the specified resource group.
-		matchRules, err = utils.ResourceGroupFuncts[*party.Group].MakeMatchRule(ctx, nil, "", position)
+		matchRules, err = utils.ResourceGroupFuncts[*party.Group].MakeMatchRule(ctx, cl, clusterID, position)
 		if err != nil {
 			return nil, err
 		}

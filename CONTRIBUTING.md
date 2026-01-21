@@ -58,7 +58,7 @@ Enhancement suggestions are tracked as GitHub issues. When creating an enhanceme
 ### Setting Up Your Development Environment
 
 1. **Install prerequisites**:
-   - Go 1.24.6 or higher
+   - Go 1.25.0 or higher
    - Docker
    - kubectl
    - kind or a Kubernetes cluster

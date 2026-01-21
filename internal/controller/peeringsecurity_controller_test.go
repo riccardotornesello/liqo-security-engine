@@ -19,6 +19,7 @@ package controller
 import (
 	"context"
 
+	ipamv1alpha1 "github.com/liqotech/liqo/apis/ipam/v1alpha1"
 	networkingv1beta1 "github.com/liqotech/liqo/apis/networking/v1beta1"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -36,8 +37,9 @@ import (
 var _ = Describe("PeeringConnectivity Controller", func() {
 	Context("When reconciling a resource", func() {
 		const (
-			resourceName = "test-resource"
-			clusterID    = "test-cluster-123"
+			resourceName       = "test-resource"
+			clusterID          = "test-cluster-123"
+			alwaysPresentRules = 1 // established connection tracking rule
 		)
 
 		var (
@@ -61,7 +63,7 @@ var _ = Describe("PeeringConnectivity Controller", func() {
 				Recorder: k8sMgr.GetEventRecorderFor("peeringconnectivity-controller"),
 			}
 
-			// Create the namespace if it doesn't exist
+			// Create the namespaces if they do not exist
 			ns := &corev1.Namespace{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: namespace,
@@ -71,6 +73,48 @@ var _ = Describe("PeeringConnectivity Controller", func() {
 			if err != nil && !errors.IsAlreadyExists(err) {
 				Expect(err).NotTo(HaveOccurred())
 			}
+
+			liqoNs := &corev1.Namespace{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "liqo",
+				},
+			}
+			err = k8sClient.Create(ctx, liqoNs)
+			if err != nil && !errors.IsAlreadyExists(err) {
+				Expect(err).NotTo(HaveOccurred())
+			}
+
+			// Create a Network resource for the remote cluster's pod CIDR
+			network := &ipamv1alpha1.Network{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      clusterID + "-pod",
+					Namespace: namespace,
+				},
+				Spec: ipamv1alpha1.NetworkSpec{
+					CIDR: networkingv1beta1.CIDR("10.0.0.0/16"),
+				},
+				Status: ipamv1alpha1.NetworkStatus{
+					CIDR: networkingv1beta1.CIDR("10.0.0.0/16"),
+				},
+			}
+			err = k8sClient.Create(ctx, network)
+			Expect(err).NotTo(HaveOccurred())
+
+			// Create a network resource for the local cluster's pod CIDR
+			localNetwork := &ipamv1alpha1.Network{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "pod-cidr",
+					Namespace: "liqo",
+				},
+				Spec: ipamv1alpha1.NetworkSpec{
+					CIDR: networkingv1beta1.CIDR("10.1.0.0/16"),
+				},
+				Status: ipamv1alpha1.NetworkStatus{
+					CIDR: networkingv1beta1.CIDR("10.1.0.0/16"),
+				},
+			}
+			err = k8sClient.Create(ctx, localNetwork)
+			Expect(err).NotTo(HaveOccurred())
 		})
 
 		AfterEach(func() {
@@ -80,6 +124,26 @@ var _ = Describe("PeeringConnectivity Controller", func() {
 			if err == nil {
 				By("Cleanup the specific resource instance PeeringConnectivity")
 				Expect(k8sClient.Delete(ctx, resource)).To(Succeed())
+			}
+
+			network := &ipamv1alpha1.Network{}
+			err = k8sClient.Get(ctx, types.NamespacedName{
+				Name:      clusterID + "-pod",
+				Namespace: namespace,
+			}, network)
+			if err == nil {
+				By("Cleanup the Network resource")
+				Expect(k8sClient.Delete(ctx, network)).To(Succeed())
+			}
+
+			localNetwork := &ipamv1alpha1.Network{}
+			err = k8sClient.Get(ctx, types.NamespacedName{
+				Name:      "pod-cidr",
+				Namespace: "liqo",
+			}, localNetwork)
+			if err == nil {
+				By("Cleanup the local Network resource")
+				Expect(k8sClient.Delete(ctx, localNetwork)).To(Succeed())
 			}
 
 			// Wait for the resource to be deleted
@@ -271,6 +335,24 @@ var _ = Describe("PeeringConnectivity Controller", func() {
 			})
 			Expect(err).NotTo(HaveOccurred())
 
+			By("Verifying the FirewallConfiguration was created")
+			fwcfg := &networkingv1beta1.FirewallConfiguration{}
+			fwcfgName := types.NamespacedName{
+				Name:      clusterID + "-security-fabric",
+				Namespace: namespace,
+			}
+			Eventually(func() int {
+				err := k8sClient.Get(ctx, fwcfgName, fwcfg)
+				if err != nil {
+					return 0
+				}
+				// The table should have chains with rules
+				if len(fwcfg.Spec.Table.Chains) > 0 {
+					return len(fwcfg.Spec.Table.Chains[0].Rules.FilterRules)
+				}
+				return 0
+			}).Should(BeNumerically("==", 1+alwaysPresentRules))
+
 			By("Updating the PeeringConnectivity rules")
 			Eventually(func() error {
 				err := k8sClient.Get(ctx, namespacedName, resource)
@@ -291,11 +373,6 @@ var _ = Describe("PeeringConnectivity Controller", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			By("Verifying the FirewallConfiguration was updated")
-			fwcfg := &networkingv1beta1.FirewallConfiguration{}
-			fwcfgName := types.NamespacedName{
-				Name:      clusterID + "-security-fabric",
-				Namespace: namespace,
-			}
 			Eventually(func() int {
 				err := k8sClient.Get(ctx, fwcfgName, fwcfg)
 				if err != nil {
@@ -306,7 +383,7 @@ var _ = Describe("PeeringConnectivity Controller", func() {
 					return len(fwcfg.Spec.Table.Chains[0].Rules.FilterRules)
 				}
 				return 0
-			}).Should(BeNumerically(">", 1)) // At least 2 rules (established + our rules)
+			}).Should(BeNumerically("==", 2+alwaysPresentRules))
 		})
 	})
 })
