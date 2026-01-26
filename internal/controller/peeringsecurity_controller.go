@@ -117,6 +117,53 @@ func (r *PeeringConnectivityReconciler) Reconcile(ctx context.Context, req ctrl.
 
 	logger.Info("reconciling PeeringConnectivity")
 
+	// Finalizer handling
+	// Examine DeletionTimestamp to determine if object is under deletion
+	if cfg.ObjectMeta.DeletionTimestamp.IsZero() {
+		// The object is not being deleted, so if it does not have our finalizer,
+		// then let's add the finalizer and update the object. This is equivalent
+		// to registering our finalizer.
+		if !controllerutil.ContainsFinalizer(cfg, FinalizerName) {
+			controllerutil.AddFinalizer(cfg, FinalizerName)
+			if err := r.Update(ctx, cfg); err != nil {
+				return ctrl.Result{}, err
+			}
+		}
+	} else {
+		// The object is being deleted
+		if controllerutil.ContainsFinalizer(cfg, FinalizerName) {
+			// Our finalizer is present, so let's remove the associated resources.
+			clusterID, err := utils.ExtractClusterID(req.Namespace)
+			if err == nil {
+				fabricFwcfg := networkingv1beta1.FirewallConfiguration{
+					ObjectMeta: metav1.ObjectMeta{
+						Name:      forge.ForgeFabricResourceName(clusterID),
+						Namespace: req.Namespace,
+					},
+				}
+				if err := r.Delete(ctx, &fabricFwcfg); err != nil && !errors.IsNotFound(err) {
+					logger.Error(err, "unable to delete the fabric firewall configuration during finalization")
+
+					r.Recorder.Eventf(cfg, corev1.EventTypeWarning, EventReasonReconcileError, "Failed to delete fabric during finalization: %v", err)
+
+					return ctrl.Result{}, fmt.Errorf("unable to delete the fabric firewall configuration %q during finalization: %w",
+						types.NamespacedName{Name: fabricFwcfg.Name, Namespace: fabricFwcfg.Namespace}, err)
+				}
+
+				logger.Info("successfully finalized PeeringConnectivity and deleted associated resources")
+			}
+
+			// Remove our finalizer from the list and update it.
+			controllerutil.RemoveFinalizer(cfg, FinalizerName)
+			if err := r.Update(ctx, cfg); err != nil {
+				return ctrl.Result{}, err
+			}
+		}
+
+		// Stop reconciliation as the item is being deleted
+		return ctrl.Result{}, nil
+	}
+
 	// Extract Cluster ID from Namespace.
 	// The namespace should follow the pattern: liqo-tenant-<cluster-id>
 	clusterID, err := utils.ExtractClusterID(req.Namespace)
