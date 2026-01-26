@@ -35,6 +35,10 @@ const (
 	ConditionTypeReady = "Ready"
 )
 
+// HandleReconcileError handles reconciliation errors by logging, recording events,
+// and updating the status condition of the PeeringConnectivity resource.
+// It sets the Ready condition to False with the provided reason and message,
+// and returns a formatted error.
 func HandleReconcileError(
 	ctx context.Context,
 	cl client.Client,

@@ -25,6 +25,9 @@ import (
 	securityv1 "github.com/riccardotornesello/liqo-security-manager/api/v1"
 )
 
+// RegisterScheme registers all required API schemes for the controller.
+// This includes core Kubernetes types, Liqo networking/IPAM/offloading types,
+// and the security API types.
 func RegisterScheme(scheme *runtime.Scheme) {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 	utilruntime.Must(networkingv1beta1.AddToScheme(scheme))
