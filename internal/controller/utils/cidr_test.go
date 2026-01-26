@@ -18,11 +18,11 @@ import (
 	"context"
 
 	ipamv1alpha1 "github.com/liqotech/liqo/apis/ipam/v1alpha1"
+	networkingv1beta1 "github.com/liqotech/liqo/apis/networking/v1beta1"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
@@ -46,7 +46,7 @@ var _ = Describe("CIDR Utilities", func() {
 					Namespace: "liqo",
 				},
 				Spec: ipamv1alpha1.NetworkSpec{
-					CIDR: ipamv1alpha1.CIDR("10.0.0.0/16"),
+					CIDR: networkingv1beta1.CIDR("10.0.0.0/16"),
 				},
 			}
 
@@ -71,7 +71,7 @@ var _ = Describe("CIDR Utilities", func() {
 					Namespace: "liqo",
 				},
 				Spec: ipamv1alpha1.NetworkSpec{
-					CIDR: ipamv1alpha1.CIDR("2001:db8::/32"),
+					CIDR: networkingv1beta1.CIDR("2001:db8::/32"),
 				},
 			}
 
@@ -92,7 +92,7 @@ var _ = Describe("CIDR Utilities", func() {
 					Namespace: "liqo-tenant-remote-cluster-123",
 				},
 				Status: ipamv1alpha1.NetworkStatus{
-					CIDR: ipamv1alpha1.CIDR("10.1.0.0/16"),
+					CIDR: networkingv1beta1.CIDR("10.1.0.0/16"),
 				},
 			}
 
@@ -118,7 +118,7 @@ var _ = Describe("CIDR Utilities", func() {
 					Namespace: "liqo-tenant-cluster-abc",
 				},
 				Status: ipamv1alpha1.NetworkStatus{
-					CIDR: ipamv1alpha1.CIDR("10.2.0.0/16"),
+					CIDR: networkingv1beta1.CIDR("10.2.0.0/16"),
 				},
 			}
 

@@ -14,7 +14,7 @@ require (
 	sigs.k8s.io/controller-runtime v0.22.4
 )
 
-// replace github.com/liqotech/liqo => ../liqo
+replace github.com/liqotech/liqo => ../liqo
 
 require (
 	cel.dev/expr v0.24.0 // indirect
