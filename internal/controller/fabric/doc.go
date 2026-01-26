@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package controller
-
-const (
-	FinalizerName = "peeringsecurity-controller.security.liqo.io/finalizer"
-)
+// Package fabric provides functions for creating Liqo FirewallConfiguration resources.
+// It translates PeeringConnectivity security rules into low-level firewall configurations
+// that can be applied to the Liqo fabric network.
+package fabric

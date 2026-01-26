@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package controller implements the Kubernetes controller for PeeringConnectivity resources.
+//
+// This controller reconciles PeeringConnectivity custom resources and creates corresponding
+// FirewallConfiguration resources in Liqo. It watches various Kubernetes resources (Pods,
+// Networks, NamespaceOffloadings) to dynamically update firewall rules based on the current
+// state of the cluster and peering configuration.
 package controller
-
-const (
-	FinalizerName = "peeringsecurity-controller.security.liqo.io/finalizer"
-)

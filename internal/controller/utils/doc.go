@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package controller
-
-const (
-	FinalizerName = "peeringsecurity-controller.security.liqo.io/finalizer"
-)
+// Package utils provides utility functions for the PeeringConnectivity controller.
+// It includes functions for extracting cluster IDs, retrieving CIDR information,
+// managing resource groups, and working with pod collections.
+package utils

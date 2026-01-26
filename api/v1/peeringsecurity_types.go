@@ -1,18 +1,16 @@
-/*
-Copyright 2025.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+// Copyright 2019-2026 The Liqo Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 package v1
 
@@ -30,20 +28,25 @@ type ResourceGroup string
 const (
 	// ResourceGroupLocalCluster represents pods running in the local cluster's own pod CIDR.
 	ResourceGroupLocalCluster ResourceGroup = "local-cluster"
+
 	// ResourceGroupRemoteCluster represents pods running in the remote cluster's pod CIDR.
 	ResourceGroupRemoteCluster ResourceGroup = "remote-cluster"
+
 	// ResourceGroupOffloaded represents pods that have been offloaded from a consumer cluster
 	// and are running on a provider cluster.
 	// For provider only!
 	ResourceGroupOffloaded ResourceGroup = "offloaded"
+
 	// ResourceGroupVcLocal (virtual cluster local) represents local pods in namespaces that are configured
 	// for offloading but are still running in the local cluster.
 	// For consumer only!
 	ResourceGroupVcLocal ResourceGroup = "vc-local"
+
 	// ResourceGroupVcRemote (virtual cluster remote) represents shadow pods on the consumer cluster
 	// that represent pods offloaded to a provider cluster .
 	// For consumer only!
 	ResourceGroupVcRemote ResourceGroup = "vc-remote"
+
 	// PrivateSubnets represents ALL private subnet ranges defined by RFC1918.
 	// This group is used to match traffic destined to private IP ranges.
 	ResourceGroupPrivateSubnets ResourceGroup = "private-subnets"
@@ -57,6 +60,7 @@ type Action string
 const (
 	// ActionAllow permits the matched network traffic to pass through.
 	ActionAllow Action = "allow"
+
 	// ActionDeny blocks the matched network traffic.
 	ActionDeny Action = "deny"
 )
@@ -131,7 +135,7 @@ type PeeringConnectivity struct {
 
 	// Metadata is standard Kubernetes object metadata.
 	// +optional
-	metav1.ObjectMeta `json:"metadata,omitzero"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
 
 	// Spec defines the desired state of PeeringConnectivity.
 	// It contains the security rules to be enforced.
@@ -141,7 +145,7 @@ type PeeringConnectivity struct {
 	// Status defines the observed state of PeeringConnectivity.
 	// It reflects the current status of rule enforcement.
 	// +optional
-	Status PeeringConnectivityStatus `json:"status,omitzero"`
+	Status PeeringConnectivityStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true
@@ -150,7 +154,7 @@ type PeeringConnectivity struct {
 // It is used by Kubernetes for list operations.
 type PeeringConnectivityList struct {
 	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata,omitzero"`
+	metav1.ListMeta `json:"metadata,omitempty"`
 	Items           []PeeringConnectivity `json:"items"`
 }
 
