@@ -25,6 +25,7 @@ import (
 	"github.com/liqotech/liqo/pkg/firewall"
 	securityv1 "github.com/riccardotornesello/liqo-security-manager/api/v1"
 	"github.com/riccardotornesello/liqo-security-manager/internal/controller/utils"
+	"github.com/riccardotornesello/liqo-security-manager/internal/resourcegroups"
 	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -143,8 +144,8 @@ func ForgeFabricSpec(ctx context.Context, cl client.Client, cfg *securityv1.Peer
 	// Create firewall sets for all resource groups that require them.
 	// Sets contain collections of IP addresses (e.g., pod IPs) that can be referenced in rules.
 	for rg := range usedResourceGroups {
-		if utils.ResourceGroupFuncts[rg].MakeSets != nil {
-			sets, err := utils.ResourceGroupFuncts[rg].MakeSets(ctx, cl, clusterID)
+		if resourcegroups.ResourceGroupFuncts[rg].MakeSets != nil {
+			sets, err := resourcegroups.ResourceGroupFuncts[rg].MakeSets(ctx, cl, clusterID)
 			if err != nil {
 				return nil, err
 			}
@@ -190,7 +191,7 @@ func ForgeMatchRule(
 
 	if party.Group != nil {
 		// Generate match rules for the specified resource group.
-		matchRules, err = utils.ResourceGroupFuncts[*party.Group].MakeMatchRule(ctx, cl, clusterID, position)
+		matchRules, err = resourcegroups.ResourceGroupFuncts[*party.Group].MakeMatchRule(ctx, cl, clusterID, position)
 		if err != nil {
 			return nil, err
 		}
