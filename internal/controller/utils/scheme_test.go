@@ -52,8 +52,9 @@ var _ = Describe("Scheme Utilities", func() {
 			scheme := runtime.NewScheme()
 			RegisterScheme(scheme)
 
-			pod := &corev1.Pod{}
-			Expect(scheme.Recognizes(pod.GetObjectKind().GroupVersionKind())).To(BeTrue())
+			// Verify the scheme recognizes core Kubernetes types by checking if Pod type is known
+			gvk := corev1.SchemeGroupVersion.WithKind("Pod")
+			Expect(scheme.Recognizes(gvk)).To(BeTrue())
 		})
 
 		It("should not panic when called multiple times", func() {
