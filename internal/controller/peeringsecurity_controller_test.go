@@ -123,6 +123,12 @@ var _ = Describe("PeeringConnectivity Controller", func() {
 			if err == nil {
 				By("Cleanup the specific resource instance PeeringConnectivity")
 				Expect(k8sClient.Delete(ctx, resource)).To(Succeed())
+
+				// Run the reconcile to process deletion finalizers
+				_, err = reconciler.Reconcile(ctx, reconcile.Request{
+					NamespacedName: namespacedName,
+				})
+				Expect(err).NotTo(HaveOccurred())
 			}
 
 			network := &ipamv1alpha1.Network{}

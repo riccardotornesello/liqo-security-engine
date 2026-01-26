@@ -87,10 +87,9 @@ spec:
                           type: string
                       type: object
                       x-kubernetes-validations:
-                      - message: exactly one of the fields in [group namespace] must
-                          be set
-                        rule: '[has(self.group),has(self.namespace)].filter(x,x==true).size()
-                          == 1'
+                      - message: exactly one of group or namespace must be set
+                        rule: '(has(self.group) ? 1 : 0) + (has(self.__namespace__)
+                          ? 1 : 0) == 1'
                     source:
                       description: |-
                         Source defines the source party for the traffic.
@@ -114,10 +113,9 @@ spec:
                           type: string
                       type: object
                       x-kubernetes-validations:
-                      - message: exactly one of the fields in [group namespace] must
-                          be set
-                        rule: '[has(self.group),has(self.namespace)].filter(x,x==true).size()
-                          == 1'
+                      - message: exactly one of group or namespace must be set
+                        rule: '(has(self.group) ? 1 : 0) + (has(self.__namespace__)
+                          ? 1 : 0) == 1'
                   type: object
                 type: array
             type: object

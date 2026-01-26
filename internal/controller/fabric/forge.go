@@ -16,7 +16,6 @@ package fabric
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	networkingv1beta1 "github.com/liqotech/liqo/apis/networking/v1beta1"
@@ -164,9 +163,6 @@ func ForgeFabricSpec(ctx context.Context, cl client.Client, cfg *securityv1.Peer
 		set := utils.ForgePodIpsSet(fmt.Sprintf("ns-%s", ns), pods)
 		spec.Table.Sets = append(spec.Table.Sets, set)
 	}
-
-	test, _ := json.Marshal(spec)
-	fmt.Printf("Fabric Spec: %s\n", test)
 
 	// Return the complete FirewallConfiguration spec.
 	return &spec, nil
