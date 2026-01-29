@@ -7,10 +7,10 @@ Truncated to 63 characters for Kubernetes compatibility.
   {{- if .Chart.Name }}
     {{- .Chart.Name | trunc 63 | trimSuffix "-" }}
   {{- else }}
-    liqo-security-engine
+    liqo-connectivity-engine
   {{- end }}
 {{- else }}
-  liqo-security-engine
+  liqo-connectivity-engine
 {{- end }}
 {{- end }}
 

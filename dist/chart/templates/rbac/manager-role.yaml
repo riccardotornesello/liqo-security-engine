@@ -3,8 +3,8 @@ kind: ClusterRole
 metadata:
     labels:
         app.kubernetes.io/managed-by: {{ .Release.Service }}
-        app.kubernetes.io/name: liqo-security-engine
-    name: liqo-security-engine-manager-role
+        app.kubernetes.io/name: liqo-connectivity-engine
+    name: liqo-connectivity-engine-manager-role
 rules:
     - apiGroups:
         - ""

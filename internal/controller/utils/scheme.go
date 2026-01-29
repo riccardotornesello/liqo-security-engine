@@ -22,7 +22,7 @@ import (
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 
-	securityv1 "github.com/riccardotornesello/liqo-security-manager/api/v1"
+	securityv1 "github.com/riccardotornesello/liqo-connectivity-engine/api/v1"
 )
 
 // RegisterScheme registers all required API schemes for the controller.

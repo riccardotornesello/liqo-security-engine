@@ -3,6 +3,6 @@ kind: ServiceAccount
 metadata:
     labels:
         app.kubernetes.io/managed-by: {{ .Release.Service }}
-        app.kubernetes.io/name: liqo-security-engine
-    name: liqo-security-engine-controller-manager
+        app.kubernetes.io/name: liqo-connectivity-engine
+    name: liqo-connectivity-engine-controller-manager
     namespace: {{ .Release.Namespace }}

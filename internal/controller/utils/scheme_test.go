@@ -23,7 +23,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 
-	securityv1 "github.com/riccardotornesello/liqo-security-manager/api/v1"
+	securityv1 "github.com/riccardotornesello/liqo-connectivity-engine/api/v1"
 )
 
 var _ = Describe("Scheme Utilities", func() {

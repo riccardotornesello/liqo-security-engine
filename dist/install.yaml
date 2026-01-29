@@ -3,27 +3,27 @@ kind: Namespace
 metadata:
   labels:
     app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/name: liqo-security-engine
+    app.kubernetes.io/name: liqo-connectivity-engine
     control-plane: controller-manager
-  name: liqo-security-engine-system
+  name: liqo-connectivity-engine-system
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   labels:
     app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/name: liqo-security-engine
-  name: liqo-security-engine-controller-manager
-  namespace: liqo-security-engine-system
+    app.kubernetes.io/name: liqo-connectivity-engine
+  name: liqo-connectivity-engine-controller-manager
+  namespace: liqo-connectivity-engine-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   labels:
     app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/name: liqo-security-engine
-  name: liqo-security-engine-leader-election-role
-  namespace: liqo-security-engine-system
+    app.kubernetes.io/name: liqo-connectivity-engine
+  name: liqo-connectivity-engine-leader-election-role
+  namespace: liqo-connectivity-engine-system
 rules:
 - apiGroups:
   - ""
@@ -62,8 +62,8 @@ kind: ClusterRole
 metadata:
   labels:
     app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/name: liqo-security-engine
-  name: liqo-security-engine-manager-role
+    app.kubernetes.io/name: liqo-connectivity-engine
+  name: liqo-connectivity-engine-manager-role
 rules:
 - apiGroups:
   - ""
@@ -77,7 +77,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: liqo-security-engine-metrics-auth-role
+  name: liqo-connectivity-engine-metrics-auth-role
 rules:
 - apiGroups:
   - authentication.k8s.io
@@ -95,7 +95,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: liqo-security-engine-metrics-reader
+  name: liqo-connectivity-engine-metrics-reader
 rules:
 - nonResourceURLs:
   - /metrics
@@ -107,56 +107,56 @@ kind: RoleBinding
 metadata:
   labels:
     app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/name: liqo-security-engine
-  name: liqo-security-engine-leader-election-rolebinding
-  namespace: liqo-security-engine-system
+    app.kubernetes.io/name: liqo-connectivity-engine
+  name: liqo-connectivity-engine-leader-election-rolebinding
+  namespace: liqo-connectivity-engine-system
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: liqo-security-engine-leader-election-role
+  name: liqo-connectivity-engine-leader-election-role
 subjects:
 - kind: ServiceAccount
-  name: liqo-security-engine-controller-manager
-  namespace: liqo-security-engine-system
+  name: liqo-connectivity-engine-controller-manager
+  namespace: liqo-connectivity-engine-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
     app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/name: liqo-security-engine
-  name: liqo-security-engine-manager-rolebinding
+    app.kubernetes.io/name: liqo-connectivity-engine
+  name: liqo-connectivity-engine-manager-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: liqo-security-engine-manager-role
+  name: liqo-connectivity-engine-manager-role
 subjects:
 - kind: ServiceAccount
-  name: liqo-security-engine-controller-manager
-  namespace: liqo-security-engine-system
+  name: liqo-connectivity-engine-controller-manager
+  namespace: liqo-connectivity-engine-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: liqo-security-engine-metrics-auth-rolebinding
+  name: liqo-connectivity-engine-metrics-auth-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: liqo-security-engine-metrics-auth-role
+  name: liqo-connectivity-engine-metrics-auth-role
 subjects:
 - kind: ServiceAccount
-  name: liqo-security-engine-controller-manager
-  namespace: liqo-security-engine-system
+  name: liqo-connectivity-engine-controller-manager
+  namespace: liqo-connectivity-engine-system
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
     app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/name: liqo-security-engine
+    app.kubernetes.io/name: liqo-connectivity-engine
     control-plane: controller-manager
-  name: liqo-security-engine-controller-manager-metrics-service
-  namespace: liqo-security-engine-system
+  name: liqo-connectivity-engine-controller-manager-metrics-service
+  namespace: liqo-connectivity-engine-system
 spec:
   ports:
   - name: https
@@ -164,7 +164,7 @@ spec:
     protocol: TCP
     targetPort: 8443
   selector:
-    app.kubernetes.io/name: liqo-security-engine
+    app.kubernetes.io/name: liqo-connectivity-engine
     control-plane: controller-manager
 ---
 apiVersion: apps/v1
@@ -172,22 +172,22 @@ kind: Deployment
 metadata:
   labels:
     app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/name: liqo-security-engine
+    app.kubernetes.io/name: liqo-connectivity-engine
     control-plane: controller-manager
-  name: liqo-security-engine-controller-manager
-  namespace: liqo-security-engine-system
+  name: liqo-connectivity-engine-controller-manager
+  namespace: liqo-connectivity-engine-system
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: liqo-security-engine
+      app.kubernetes.io/name: liqo-connectivity-engine
       control-plane: controller-manager
   template:
     metadata:
       annotations:
         kubectl.kubernetes.io/default-container: manager
       labels:
-        app.kubernetes.io/name: liqo-security-engine
+        app.kubernetes.io/name: liqo-connectivity-engine
         control-plane: controller-manager
     spec:
       containers:
@@ -230,6 +230,6 @@ spec:
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
-      serviceAccountName: liqo-security-engine-controller-manager
+      serviceAccountName: liqo-connectivity-engine-controller-manager
       terminationGracePeriodSeconds: 10
       volumes: []

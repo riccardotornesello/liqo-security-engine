@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package main is the entry point for the Liqo Security Engine controller manager.
+// Package main is the entry point for the Liqo Connectivity Engine controller manager.
 // It initializes and starts the Kubernetes controller that manages PeeringConnectivity
 // resources and their corresponding FirewallConfiguration resources.
 package main
@@ -34,8 +34,8 @@ import (
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
-	"github.com/riccardotornesello/liqo-security-manager/internal/controller"
-	"github.com/riccardotornesello/liqo-security-manager/internal/controller/utils"
+	"github.com/riccardotornesello/liqo-connectivity-engine/internal/controller"
+	"github.com/riccardotornesello/liqo-connectivity-engine/internal/controller/utils"
 	// +kubebuilder:scaffold:imports
 )
 

@@ -4,9 +4,9 @@ kind: Service
 metadata:
     labels:
         app.kubernetes.io/managed-by: {{ .Release.Service }}
-        app.kubernetes.io/name: liqo-security-engine
+        app.kubernetes.io/name: liqo-connectivity-engine
         control-plane: controller-manager
-    name: liqo-security-engine-controller-manager-metrics-service
+    name: liqo-connectivity-engine-controller-manager-metrics-service
     namespace: {{ .Release.Namespace }}
 spec:
     ports:
@@ -15,6 +15,6 @@ spec:
           protocol: TCP
           targetPort: {{ .Values.metrics.port }}
     selector:
-        app.kubernetes.io/name: liqo-security-engine
+        app.kubernetes.io/name: liqo-connectivity-engine
         control-plane: controller-manager
 {{- end }}

@@ -18,7 +18,7 @@ import (
 	"context"
 
 	networkingv1beta1firewall "github.com/liqotech/liqo/apis/networking/v1beta1/firewall"
-	"github.com/riccardotornesello/liqo-security-manager/internal/controller/utils"
+	"github.com/riccardotornesello/liqo-connectivity-engine/internal/controller/utils"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 

@@ -29,8 +29,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/ptr"
 
-	securityv1 "github.com/riccardotornesello/liqo-security-manager/api/v1"
-	"github.com/riccardotornesello/liqo-security-manager/internal/controller/utils"
+	securityv1 "github.com/riccardotornesello/liqo-connectivity-engine/api/v1"
+	"github.com/riccardotornesello/liqo-connectivity-engine/internal/controller/utils"
 )
 
 var _ = Describe("PeeringConnectivity Controller", func() {

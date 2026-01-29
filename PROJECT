@@ -10,8 +10,8 @@ plugins:
   helm.kubebuilder.io/v2-alpha:
     manifests: dist/install.yaml
     output: dist
-projectName: liqo-security-engine
-repo: github.com/riccardotornesello/liqo-security-manager
+projectName: liqo-connectivity-engine
+repo: github.com/riccardotornesello/liqo-connectivity-engine
 resources:
 - api:
     crdVersion: v1
@@ -20,6 +20,6 @@ resources:
   domain: liqo.io
   group: security
   kind: PeeringConnectivity
-  path: github.com/riccardotornesello/liqo-security-manager/api/v1
+  path: github.com/riccardotornesello/liqo-connectivity-engine/api/v1
   version: v1
 version: "3"

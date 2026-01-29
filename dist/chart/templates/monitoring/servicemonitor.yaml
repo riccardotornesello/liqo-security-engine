@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "chart.labels" . | nindent 4 }}
     control-plane: controller-manager
-  name: liqo-security-engine-controller-manager-metrics-monitor
+  name: liqo-connectivity-engine-controller-manager-metrics-monitor
   namespace: {{ .Release.Namespace }}
 spec:
   endpoints:
@@ -15,7 +15,7 @@ spec:
       bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
       tlsConfig:
         {{- if .Values.certManager.enable }}
-        serverName: liqo-security-engine-controller-manager-metrics-service.{{ .Release.Namespace }}.svc
+        serverName: liqo-connectivity-engine-controller-manager-metrics-service.{{ .Release.Namespace }}.svc
         # Apply secure TLS configuration with cert-manager
         insecureSkipVerify: false
         ca:

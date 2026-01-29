@@ -25,7 +25,7 @@ import (
 	"k8s.io/client-go/tools/record"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	securityv1 "github.com/riccardotornesello/liqo-security-manager/api/v1"
+	securityv1 "github.com/riccardotornesello/liqo-connectivity-engine/api/v1"
 )
 
 const (

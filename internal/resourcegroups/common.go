@@ -20,7 +20,7 @@ import (
 	networkingv1beta1firewall "github.com/liqotech/liqo/apis/networking/v1beta1/firewall"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	securityv1 "github.com/riccardotornesello/liqo-security-manager/api/v1"
+	securityv1 "github.com/riccardotornesello/liqo-connectivity-engine/api/v1"
 )
 
 // groupFuncts defines the functions needed to implement a resource group.

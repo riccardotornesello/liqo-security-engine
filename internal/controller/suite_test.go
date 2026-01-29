@@ -22,7 +22,7 @@ import (
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"github.com/riccardotornesello/liqo-security-manager/internal/controller/utils"
+	"github.com/riccardotornesello/liqo-connectivity-engine/internal/controller/utils"
 
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"

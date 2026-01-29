@@ -124,7 +124,7 @@ After applying a PeeringConnectivity resource:
 
 4. **Check controller logs**:
    ```bash
-   kubectl logs -n liqo-system -l app=liqo-security-engine
+   kubectl logs -n liqo-system -l app=liqo-connectivity-engine
    ```
 
 ## Troubleshooting

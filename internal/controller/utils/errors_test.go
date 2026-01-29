@@ -27,7 +27,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 
-	securityv1 "github.com/riccardotornesello/liqo-security-manager/api/v1"
+	securityv1 "github.com/riccardotornesello/liqo-connectivity-engine/api/v1"
 )
 
 var _ = Describe("Errors Utilities", func() {

@@ -1,4 +1,4 @@
-module github.com/riccardotornesello/liqo-security-manager
+module github.com/riccardotornesello/liqo-connectivity-engine
 
 go 1.25.6
 

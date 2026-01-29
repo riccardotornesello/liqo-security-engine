@@ -3,8 +3,8 @@ kind: Role
 metadata:
     labels:
         app.kubernetes.io/managed-by: {{ .Release.Service }}
-        app.kubernetes.io/name: liqo-security-engine
-    name: liqo-security-engine-leader-election-role
+        app.kubernetes.io/name: liqo-connectivity-engine
+    name: liqo-connectivity-engine-leader-election-role
     namespace: {{ .Release.Namespace }}
 rules:
     - apiGroups:

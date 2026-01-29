@@ -22,9 +22,9 @@ import (
 	networkingv1beta1firewall "github.com/liqotech/liqo/apis/networking/v1beta1/firewall"
 	"github.com/liqotech/liqo/pkg/fabric"
 	"github.com/liqotech/liqo/pkg/firewall"
-	securityv1 "github.com/riccardotornesello/liqo-security-manager/api/v1"
-	"github.com/riccardotornesello/liqo-security-manager/internal/controller/utils"
-	"github.com/riccardotornesello/liqo-security-manager/internal/resourcegroups"
+	securityv1 "github.com/riccardotornesello/liqo-connectivity-engine/api/v1"
+	"github.com/riccardotornesello/liqo-connectivity-engine/internal/controller/utils"
+	"github.com/riccardotornesello/liqo-connectivity-engine/internal/resourcegroups"
 	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )

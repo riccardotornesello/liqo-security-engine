@@ -3,14 +3,14 @@ kind: RoleBinding
 metadata:
     labels:
         app.kubernetes.io/managed-by: {{ .Release.Service }}
-        app.kubernetes.io/name: liqo-security-engine
-    name: liqo-security-engine-leader-election-rolebinding
+        app.kubernetes.io/name: liqo-connectivity-engine
+    name: liqo-connectivity-engine-leader-election-rolebinding
     namespace: {{ .Release.Namespace }}
 roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
-    name: liqo-security-engine-leader-election-role
+    name: liqo-connectivity-engine-leader-election-role
 subjects:
     - kind: ServiceAccount
-      name: liqo-security-engine-controller-manager
+      name: liqo-connectivity-engine-controller-manager
       namespace: {{ .Release.Namespace }}

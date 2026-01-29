@@ -36,9 +36,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	securityv1 "github.com/riccardotornesello/liqo-security-manager/api/v1"
-	"github.com/riccardotornesello/liqo-security-manager/internal/controller/fabric"
-	"github.com/riccardotornesello/liqo-security-manager/internal/controller/utils"
+	securityv1 "github.com/riccardotornesello/liqo-connectivity-engine/api/v1"
+	"github.com/riccardotornesello/liqo-connectivity-engine/internal/controller/fabric"
+	"github.com/riccardotornesello/liqo-connectivity-engine/internal/controller/utils"
 )
 
 // PeeringConnectivityReconciler reconciles a PeeringConnectivity object.

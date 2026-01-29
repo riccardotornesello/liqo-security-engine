@@ -18,8 +18,8 @@ import (
 	"context"
 
 	networkingv1beta1 "github.com/liqotech/liqo/apis/networking/v1beta1"
-	securityv1 "github.com/riccardotornesello/liqo-security-manager/api/v1"
-	"github.com/riccardotornesello/liqo-security-manager/internal/controller/utils"
+	securityv1 "github.com/riccardotornesello/liqo-connectivity-engine/api/v1"
+	"github.com/riccardotornesello/liqo-connectivity-engine/internal/controller/utils"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"

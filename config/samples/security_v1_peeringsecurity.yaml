@@ -2,7 +2,7 @@ apiVersion: security.liqo.io/v1
 kind: PeeringConnectivity
 metadata:
   labels:
-    app.kubernetes.io/name: liqo-security-engine
+    app.kubernetes.io/name: liqo-connectivity-engine
     app.kubernetes.io/managed-by: kustomize
   name: peeringconnectivity-sample
 spec:
