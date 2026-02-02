@@ -68,7 +68,7 @@ const (
 	EventReasonSynced = "Synced"
 
 	// FinalizerName is the name of the finalizer added to PeeringConnectivity resources.
-	FinalizerName = "peeringsecurity-controller.security.liqo.io/finalizer"
+	FinalizerName = "peeringconnectivity-controller.security.liqo.io/finalizer"
 )
 
 // +kubebuilder:rbac:groups=security.liqo.io,resources=peeringconnectivities,verbs=get;list;watch;create;update;patch;delete
