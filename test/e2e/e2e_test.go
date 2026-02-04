@@ -47,7 +47,7 @@ var _ = Describe("Manager", Ordered, func() {
 	var controllerPodName string
 
 	// Before running the tests, set up the environment by creating the namespace,
-	// enforce the restricted security policy to the namespace, installing CRDs,
+	// enforce the restricted connectivity policy to the namespace, installing CRDs,
 	// and deploying the controller.
 	BeforeAll(func() {
 		By("creating manager namespace")

@@ -20,7 +20,7 @@ import (
 	networkingv1beta1firewall "github.com/liqotech/liqo/apis/networking/v1beta1/firewall"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	securityv1 "github.com/riccardotornesello/liqo-connectivity-engine/api/v1"
+	connectivityv1 "github.com/riccardotornesello/liqo-connectivity-engine/api/v1"
 )
 
 // groupFuncts defines the functions needed to implement a resource group.
@@ -37,14 +37,14 @@ type groupFuncts struct {
 // ResourceGroupFuncts maps each ResourceGroup to its implementation functions.
 // This allows the controller to dynamically create firewall rules based on the
 // resource groups specified in the PeeringConnectivity spec.
-var ResourceGroupFuncts = map[securityv1.ResourceGroup]groupFuncts{
-	securityv1.ResourceGroupLocalCluster:  ResourceGroupLocalCluster,
-	securityv1.ResourceGroupRemoteCluster: ResourceGroupRemoteCluster,
+var ResourceGroupFuncts = map[connectivityv1.ResourceGroup]groupFuncts{
+	connectivityv1.ResourceGroupLocalCluster:  ResourceGroupLocalCluster,
+	connectivityv1.ResourceGroupRemoteCluster: ResourceGroupRemoteCluster,
 
-	securityv1.ResourceGroupOffloaded: ResourceGroupOffloaded,
+	connectivityv1.ResourceGroupOffloaded: ResourceGroupOffloaded,
 
-	securityv1.ResourceGroupVcLocal:  ResourceGroupVcLocal,
-	securityv1.ResourceGroupVcRemote: ResourceGroupVcRemote,
+	connectivityv1.ResourceGroupVcLocal:  ResourceGroupVcLocal,
+	connectivityv1.ResourceGroupVcRemote: ResourceGroupVcRemote,
 
-	securityv1.ResourceGroupPrivateSubnets: ResourceGroupPrivateSubnets,
+	connectivityv1.ResourceGroupPrivateSubnets: ResourceGroupPrivateSubnets,
 }

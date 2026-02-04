@@ -29,7 +29,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/ptr"
 
-	securityv1 "github.com/riccardotornesello/liqo-connectivity-engine/api/v1"
+	connectivityv1 "github.com/riccardotornesello/liqo-connectivity-engine/api/v1"
 	"github.com/riccardotornesello/liqo-connectivity-engine/internal/controller/utils"
 )
 
@@ -118,7 +118,7 @@ var _ = Describe("PeeringConnectivity Controller", func() {
 
 		AfterEach(func() {
 			// Cleanup resources
-			resource := &securityv1.PeeringConnectivity{}
+			resource := &connectivityv1.PeeringConnectivity{}
 			err := k8sClient.Get(ctx, namespacedName, resource)
 			if err == nil {
 				By("Cleanup the specific resource instance PeeringConnectivity")
@@ -160,17 +160,17 @@ var _ = Describe("PeeringConnectivity Controller", func() {
 
 		It("should successfully create PeeringConnectivity resource with basic rules", func() {
 			By("creating the custom resource for the Kind PeeringConnectivity")
-			resource := &securityv1.PeeringConnectivity{
+			resource := &connectivityv1.PeeringConnectivity{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      resourceName,
 					Namespace: namespace,
 				},
-				Spec: securityv1.PeeringConnectivitySpec{
-					Rules: []securityv1.Rule{
+				Spec: connectivityv1.PeeringConnectivitySpec{
+					Rules: []connectivityv1.Rule{
 						{
-							Action:      securityv1.ActionAllow,
-							Source:      &securityv1.Party{Group: ptr.To(securityv1.ResourceGroupRemoteCluster)},
-							Destination: &securityv1.Party{Group: ptr.To(securityv1.ResourceGroupLocalCluster)},
+							Action:      connectivityv1.ActionAllow,
+							Source:      &connectivityv1.Party{Group: ptr.To(connectivityv1.ResourceGroupRemoteCluster)},
+							Destination: &connectivityv1.Party{Group: ptr.To(connectivityv1.ResourceGroupLocalCluster)},
 						},
 					},
 				},
@@ -186,7 +186,7 @@ var _ = Describe("PeeringConnectivity Controller", func() {
 			By("Verifying the FirewallConfiguration was created")
 			fwcfg := &networkingv1beta1.FirewallConfiguration{}
 			fwcfgName := types.NamespacedName{
-				Name:      clusterID + "-security-fabric",
+				Name:      clusterID + "-connectivity-fabric",
 				Namespace: namespace,
 			}
 			Eventually(func() error {
@@ -210,16 +210,16 @@ var _ = Describe("PeeringConnectivity Controller", func() {
 
 		It("should handle PeeringConnectivity with deny rules", func() {
 			By("creating a PeeringConnectivity with deny rules")
-			resource := &securityv1.PeeringConnectivity{
+			resource := &connectivityv1.PeeringConnectivity{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      resourceName,
 					Namespace: namespace,
 				},
-				Spec: securityv1.PeeringConnectivitySpec{
-					Rules: []securityv1.Rule{
+				Spec: connectivityv1.PeeringConnectivitySpec{
+					Rules: []connectivityv1.Rule{
 						{
-							Action: securityv1.ActionDeny,
-							Source: &securityv1.Party{Group: ptr.To(securityv1.ResourceGroupRemoteCluster)},
+							Action: connectivityv1.ActionDeny,
+							Source: &connectivityv1.Party{Group: ptr.To(connectivityv1.ResourceGroupRemoteCluster)},
 						},
 					},
 				},
@@ -235,7 +235,7 @@ var _ = Describe("PeeringConnectivity Controller", func() {
 			By("Verifying the FirewallConfiguration was created")
 			fwcfg := &networkingv1beta1.FirewallConfiguration{}
 			fwcfgName := types.NamespacedName{
-				Name:      clusterID + "-security-fabric",
+				Name:      clusterID + "-connectivity-fabric",
 				Namespace: namespace,
 			}
 			Eventually(func() error {
@@ -245,13 +245,13 @@ var _ = Describe("PeeringConnectivity Controller", func() {
 
 		It("should handle PeeringConnectivity with empty rules", func() {
 			By("creating a PeeringConnectivity with no rules")
-			resource := &securityv1.PeeringConnectivity{
+			resource := &connectivityv1.PeeringConnectivity{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      resourceName,
 					Namespace: namespace,
 				},
-				Spec: securityv1.PeeringConnectivitySpec{
-					Rules: []securityv1.Rule{},
+				Spec: connectivityv1.PeeringConnectivitySpec{
+					Rules: []connectivityv1.Rule{},
 				},
 			}
 			Expect(k8sClient.Create(ctx, resource)).To(Succeed())
@@ -283,12 +283,12 @@ var _ = Describe("PeeringConnectivity Controller", func() {
 				Expect(k8sClient.Create(ctx, ns)).To(Succeed())
 			}
 
-			resource := &securityv1.PeeringConnectivity{
+			resource := &connectivityv1.PeeringConnectivity{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "invalid-resource",
 					Namespace: invalidNamespace,
 				},
-				Spec: securityv1.PeeringConnectivitySpec{},
+				Spec: connectivityv1.PeeringConnectivitySpec{},
 			}
 			Expect(k8sClient.Create(ctx, resource)).To(Succeed())
 
@@ -318,16 +318,16 @@ var _ = Describe("PeeringConnectivity Controller", func() {
 
 		It("should update FirewallConfiguration when PeeringConnectivity is updated", func() {
 			By("creating initial PeeringConnectivity")
-			resource := &securityv1.PeeringConnectivity{
+			resource := &connectivityv1.PeeringConnectivity{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      resourceName,
 					Namespace: namespace,
 				},
-				Spec: securityv1.PeeringConnectivitySpec{
-					Rules: []securityv1.Rule{
+				Spec: connectivityv1.PeeringConnectivitySpec{
+					Rules: []connectivityv1.Rule{
 						{
-							Action: securityv1.ActionAllow,
-							Source: &securityv1.Party{Group: ptr.To(securityv1.ResourceGroupRemoteCluster)},
+							Action: connectivityv1.ActionAllow,
+							Source: &connectivityv1.Party{Group: ptr.To(connectivityv1.ResourceGroupRemoteCluster)},
 						},
 					},
 				},
@@ -343,7 +343,7 @@ var _ = Describe("PeeringConnectivity Controller", func() {
 			By("Verifying the FirewallConfiguration was created")
 			fwcfg := &networkingv1beta1.FirewallConfiguration{}
 			fwcfgName := types.NamespacedName{
-				Name:      clusterID + "-security-fabric",
+				Name:      clusterID + "-connectivity-fabric",
 				Namespace: namespace,
 			}
 			Eventually(func() int {
@@ -364,9 +364,9 @@ var _ = Describe("PeeringConnectivity Controller", func() {
 				if err != nil {
 					return err
 				}
-				resource.Spec.Rules = append(resource.Spec.Rules, securityv1.Rule{
-					Action: securityv1.ActionDeny,
-					Source: &securityv1.Party{Group: ptr.To(securityv1.ResourceGroupLocalCluster)},
+				resource.Spec.Rules = append(resource.Spec.Rules, connectivityv1.Rule{
+					Action: connectivityv1.ActionDeny,
+					Source: &connectivityv1.Party{Group: ptr.To(connectivityv1.ResourceGroupLocalCluster)},
 				})
 				return k8sClient.Update(ctx, resource)
 			}).Should(Succeed())

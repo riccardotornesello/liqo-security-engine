@@ -13,6 +13,6 @@
 // limitations under the License.
 
 // Package fabric provides functions for creating Liqo FirewallConfiguration resources.
-// It translates PeeringConnectivity security rules into low-level firewall configurations
+// It translates PeeringConnectivity rules into low-level firewall configurations
 // that can be applied to the Liqo fabric network.
 package fabric

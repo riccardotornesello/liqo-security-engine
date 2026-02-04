@@ -13,5 +13,5 @@
 // limitations under the License.
 
 // Package resourcegroups contains the definitions and implementations of various
-// resource groups used in the Liqo security manager for firewall rule generation.
+// resource groups used in the Liqo connectivity manager for firewall rule generation.
 package resourcegroups

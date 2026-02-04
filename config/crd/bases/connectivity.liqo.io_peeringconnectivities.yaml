@@ -19,7 +19,7 @@ spec:
       openAPIV3Schema:
         description: |-
           PeeringConnectivity is the Schema for the peeringconnectivities API.
-          It represents a security policy configuration for controlling network connectivity
+          It represents a connectivity policy configuration for controlling network connectivity
           in a Liqo multi-cluster peering scenario. Each PeeringConnectivity resource is
           typically created in a tenant namespace (e.g., liqo-tenant-<cluster-id>) and
           defines firewall rules that control traffic between different resource groups.
@@ -44,7 +44,7 @@ spec:
           spec:
             description: |-
               Spec defines the desired state of PeeringConnectivity.
-              It contains the security rules to be enforced.
+              It contains the connectivity rules to be enforced.
             properties:
               rules:
                 description: |-

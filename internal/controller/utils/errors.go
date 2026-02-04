@@ -25,7 +25,7 @@ import (
 	"k8s.io/client-go/tools/record"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	securityv1 "github.com/riccardotornesello/liqo-connectivity-engine/api/v1"
+	connectivityv1 "github.com/riccardotornesello/liqo-connectivity-engine/api/v1"
 )
 
 const (
@@ -44,7 +44,7 @@ func HandleReconcileError(
 	cl client.Client,
 	logger logr.Logger,
 	recorder record.EventRecorder,
-	cfg *securityv1.PeeringConnectivity,
+	cfg *connectivityv1.PeeringConnectivity,
 	err error,
 	message string,
 	eventReason string,

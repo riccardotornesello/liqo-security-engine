@@ -18,7 +18,7 @@ resources:
     namespaced: true
   controller: true
   domain: liqo.io
-  group: security
+  group: connectivity
   kind: PeeringConnectivity
   path: github.com/riccardotornesello/liqo-connectivity-engine/api/v1
   version: v1

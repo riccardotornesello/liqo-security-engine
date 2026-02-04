@@ -27,7 +27,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 
-	securityv1 "github.com/riccardotornesello/liqo-connectivity-engine/api/v1"
+	connectivityv1 "github.com/riccardotornesello/liqo-connectivity-engine/api/v1"
 )
 
 var _ = Describe("Errors Utilities", func() {
@@ -48,7 +48,7 @@ var _ = Describe("Errors Utilities", func() {
 
 	Describe("HandleReconcileError", func() {
 		It("should update status condition to False with error message", func() {
-			cfg := &securityv1.PeeringConnectivity{
+			cfg := &connectivityv1.PeeringConnectivity{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:       "test-peering",
 					Namespace:  "default",
@@ -66,7 +66,7 @@ var _ = Describe("Errors Utilities", func() {
 			Expect(err.Error()).To(ContainSubstring("test error"))
 
 			// Verify the status was updated
-			var updatedCfg securityv1.PeeringConnectivity
+			var updatedCfg connectivityv1.PeeringConnectivity
 			Expect(cl.Get(ctx, client.ObjectKeyFromObject(cfg), &updatedCfg)).To(Succeed())
 			Expect(updatedCfg.Status.ObservedGeneration).To(Equal(int64(1)))
 
@@ -80,7 +80,7 @@ var _ = Describe("Errors Utilities", func() {
 		})
 
 		It("should record an event", func() {
-			cfg := &securityv1.PeeringConnectivity{
+			cfg := &connectivityv1.PeeringConnectivity{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:       "test-peering",
 					Namespace:  "default",
@@ -98,7 +98,7 @@ var _ = Describe("Errors Utilities", func() {
 		})
 
 		It("should wrap the original error", func() {
-			cfg := &securityv1.PeeringConnectivity{
+			cfg := &connectivityv1.PeeringConnectivity{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:       "test-peering",
 					Namespace:  "default",
@@ -116,7 +116,7 @@ var _ = Describe("Errors Utilities", func() {
 		})
 
 		It("should set the correct observed generation", func() {
-			cfg := &securityv1.PeeringConnectivity{
+			cfg := &connectivityv1.PeeringConnectivity{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:       "test-peering",
 					Namespace:  "default",
@@ -129,7 +129,7 @@ var _ = Describe("Errors Utilities", func() {
 			testErr := errors.New("test error")
 			_ = HandleReconcileError(ctx, cl, logger, recorder, cfg, testErr, "Test failed", "EventReason", "ConditionReason")
 
-			var updatedCfg securityv1.PeeringConnectivity
+			var updatedCfg connectivityv1.PeeringConnectivity
 			Expect(cl.Get(ctx, client.ObjectKeyFromObject(cfg), &updatedCfg)).To(Succeed())
 			Expect(updatedCfg.Status.ObservedGeneration).To(Equal(int64(5)))
 		})

@@ -18,7 +18,7 @@ import (
 	"context"
 
 	networkingv1beta1 "github.com/liqotech/liqo/apis/networking/v1beta1"
-	securityv1 "github.com/riccardotornesello/liqo-connectivity-engine/api/v1"
+	connectivityv1 "github.com/riccardotornesello/liqo-connectivity-engine/api/v1"
 	"github.com/riccardotornesello/liqo-connectivity-engine/internal/controller/utils"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -27,14 +27,14 @@ import (
 )
 
 // ReconcileFabricFirewallConfiguration ensures that the FirewallConfiguration
-// resource for the fabric security rules exists and is up to date.
+// resource for the fabric connectivity rules exists and is up to date.
 // It creates or updates the resource as needed based on the provided
 // PeeringConnectivity configuration.
 func ReconcileFabricFirewallConfiguration(
 	ctx context.Context,
 	c client.Client,
 	scheme *runtime.Scheme,
-	cfg *securityv1.PeeringConnectivity,
+	cfg *connectivityv1.PeeringConnectivity,
 	clusterID string,
 ) (controllerutil.OperationResult, error) {
 	fabricFwcfg := networkingv1beta1.FirewallConfiguration{
@@ -46,7 +46,7 @@ func ReconcileFabricFirewallConfiguration(
 
 	return controllerutil.CreateOrUpdate(ctx, c, &fabricFwcfg, func() error {
 		// Set labels that identify this FirewallConfiguration as a fabric-level
-		// security configuration targeting all nodes.
+		// connectivity configuration targeting all nodes.
 		fabricFwcfg.SetLabels(ForgeFabricLabels(clusterID))
 
 		// Generate the FirewallConfiguration spec based on the PeeringConnectivity rules.

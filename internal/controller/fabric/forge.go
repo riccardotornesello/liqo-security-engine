@@ -22,7 +22,7 @@ import (
 	networkingv1beta1firewall "github.com/liqotech/liqo/apis/networking/v1beta1/firewall"
 	"github.com/liqotech/liqo/pkg/fabric"
 	"github.com/liqotech/liqo/pkg/firewall"
-	securityv1 "github.com/riccardotornesello/liqo-connectivity-engine/api/v1"
+	connectivityv1 "github.com/riccardotornesello/liqo-connectivity-engine/api/v1"
 	"github.com/riccardotornesello/liqo-connectivity-engine/internal/controller/utils"
 	"github.com/riccardotornesello/liqo-connectivity-engine/internal/resourcegroups"
 	"k8s.io/utils/ptr"
@@ -31,13 +31,13 @@ import (
 
 const (
 	// fabricResourceNameSuffix is the suffix appended to the cluster ID to form the fabric FirewallConfiguration name.
-	fabricResourceNameSuffix = "security-fabric"
+	fabricResourceNameSuffix = "connectivity-fabric"
 
 	// fabricTableName is the name of the nftables table used by the fabric FirewallConfiguration.
-	fabricTableName = "cluster-security"
+	fabricTableName = "cluster-connectivity"
 
 	// fabricChainName is the name of the nftables chain used by the fabric FirewallConfiguration.
-	fabricChainName = "cluster-security-filter"
+	fabricChainName = "cluster-connectivity-filter"
 
 	// fabricChainPriority is the priority of the fabric firewall chain.
 	// Lower values have higher priority.
@@ -45,13 +45,13 @@ const (
 )
 
 // ForgeFabricResourceName generates the name of the Fabric FirewallConfiguration resource
-// for the given cluster ID. The name follows the pattern: <cluster-id>-security-fabric
+// for the given cluster ID. The name follows the pattern: <cluster-id>-connectivity-fabric
 func ForgeFabricResourceName(clusterID string) string {
 	return fmt.Sprintf("%s-%s", clusterID, fabricResourceNameSuffix)
 }
 
 // ForgeFabricLabels creates the labels for a Fabric FirewallConfiguration resource.
-// These labels identify the configuration as a fabric-level security configuration
+// These labels identify the configuration as a fabric-level connectivity configuration
 // that targets all nodes in the cluster.
 func ForgeFabricLabels(clusterID string) map[string]string {
 	// Labels identify this as a fabric-level firewall configuration targeting all nodes.
@@ -62,13 +62,13 @@ func ForgeFabricLabels(clusterID string) map[string]string {
 }
 
 // ForgeFabricSpec creates the FirewallConfiguration spec from a PeeringConnectivity resource.
-// It translates the high-level security rules into low-level nftables firewall rules,
+// It translates the high-level connectivity rules into low-level nftables firewall rules,
 // including:
 // - Creating firewall sets for dynamic pod IP collections
 // - Creating match rules for source and destination filtering
 // - Setting up allow/deny actions based on the rule specifications
 // - Adding a default rule to allow established/related connections
-func ForgeFabricSpec(ctx context.Context, cl client.Client, cfg *securityv1.PeeringConnectivity, clusterID string) (*networkingv1beta1.FirewallConfigurationSpec, error) {
+func ForgeFabricSpec(ctx context.Context, cl client.Client, cfg *connectivityv1.PeeringConnectivity, clusterID string) (*networkingv1beta1.FirewallConfigurationSpec, error) {
 	// Initialize the FirewallConfiguration with basic structure.
 	spec := networkingv1beta1.FirewallConfigurationSpec{
 		Table: networkingv1beta1firewall.Table{
@@ -105,7 +105,7 @@ func ForgeFabricSpec(ctx context.Context, cl client.Client, cfg *securityv1.Peer
 	}
 
 	// Add the allowed traffic rules
-	usedResourceGroups := make(map[securityv1.ResourceGroup]struct{})
+	usedResourceGroups := make(map[connectivityv1.ResourceGroup]struct{})
 	usedNamespaces := make(map[string]struct{})
 
 	for i, rule := range cfg.Spec.Rules {
@@ -118,7 +118,7 @@ func ForgeFabricSpec(ctx context.Context, cl client.Client, cfg *securityv1.Peer
 		}
 
 		// Set the action based on the rule specification.
-		if rule.Action != securityv1.ActionAllow {
+		if rule.Action != connectivityv1.ActionAllow {
 			filterRule.Action = networkingv1beta1firewall.ActionDrop
 		}
 
@@ -174,10 +174,10 @@ func ForgeFabricSpec(ctx context.Context, cl client.Client, cfg *securityv1.Peer
 func ForgeMatchRule(
 	ctx context.Context,
 	cl client.Client,
-	party *securityv1.Party,
+	party *connectivityv1.Party,
 	clusterID string,
 	position networkingv1beta1firewall.MatchPosition,
-	usedResourceGroups map[securityv1.ResourceGroup]struct{},
+	usedResourceGroups map[connectivityv1.ResourceGroup]struct{},
 	usedNamespaces map[string]struct{},
 ) (matchRules []networkingv1beta1firewall.Match, err error) {
 	if party == nil {

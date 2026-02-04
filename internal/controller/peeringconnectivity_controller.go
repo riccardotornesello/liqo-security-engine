@@ -36,14 +36,14 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	securityv1 "github.com/riccardotornesello/liqo-connectivity-engine/api/v1"
+	connectivityv1 "github.com/riccardotornesello/liqo-connectivity-engine/api/v1"
 	"github.com/riccardotornesello/liqo-connectivity-engine/internal/controller/fabric"
 	"github.com/riccardotornesello/liqo-connectivity-engine/internal/controller/utils"
 )
 
 // PeeringConnectivityReconciler reconciles a PeeringConnectivity object.
 // It manages the lifecycle of FirewallConfiguration resources that implement
-// the security policies defined in PeeringConnectivity specs.
+// the connectivity policies defined in PeeringConnectivity specs.
 type PeeringConnectivityReconciler struct {
 	client.Client
 	Scheme   *runtime.Scheme
@@ -96,7 +96,7 @@ func (r *PeeringConnectivityReconciler) Reconcile(ctx context.Context, req ctrl.
 	logger := log.FromContext(ctx)
 
 	// FETCH: retrieve the PeeringConnectivity resource.
-	cfg := &securityv1.PeeringConnectivity{}
+	cfg := &connectivityv1.PeeringConnectivity{}
 	if err := r.Client.Get(ctx, req.NamespacedName, cfg); err != nil {
 		if errors.IsNotFound(err) {
 			// The PeeringConnectivity resource was not found. It may have been deleted after
@@ -305,7 +305,7 @@ func (r *PeeringConnectivityReconciler) networkEnqueuer(ctx context.Context, obj
 func (r *PeeringConnectivityReconciler) allPeeringConnectivityEnqueuer(ctx context.Context, _ client.Object) []ctrl.Request {
 	logger := log.FromContext(ctx)
 
-	peeringConnectivityList := &securityv1.PeeringConnectivityList{}
+	peeringConnectivityList := &connectivityv1.PeeringConnectivityList{}
 	if err := r.Client.List(ctx, peeringConnectivityList); err != nil {
 		logger.Error(err, "unable to list PeeringConnectivity resources for enqueuing all")
 		return nil
@@ -331,7 +331,7 @@ func (r *PeeringConnectivityReconciler) allPeeringConnectivityEnqueuer(ctx conte
 // - Watch Pods, Networks, and NamespaceOffloadings to trigger reconciliation when they change
 func (r *PeeringConnectivityReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&securityv1.PeeringConnectivity{}).
+		For(&connectivityv1.PeeringConnectivity{}).
 		Owns(&networkingv1beta1.FirewallConfiguration{}).
 		Watches(&corev1.Pod{}, handler.EnqueueRequestsFromMapFunc(r.podEnqueuer)).
 		Watches(&ipamv1alpha1.Network{}, handler.EnqueueRequestsFromMapFunc(r.networkEnqueuer)).

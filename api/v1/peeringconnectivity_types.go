@@ -20,7 +20,7 @@ import (
 
 // ResourceGroup represents a group of resources in a Liqo peering environment.
 // It categorizes different types of pods and network entities to enable fine-grained
-// network security policy management across cluster boundaries.
+// network connectivity policy management across cluster boundaries.
 //
 // +kubebuilder:validation:Enum=local-cluster;remote-cluster;offloaded;vc-local;vc-remote;private-subnets
 type ResourceGroup string
@@ -95,7 +95,7 @@ type Rule struct {
 }
 
 // PeeringConnectivitySpec defines the desired state of PeeringConnectivity.
-// It specifies the security rules that should be applied to network traffic
+// It specifies the connectivity rules that should be applied to network traffic
 // in a Liqo peering environment.
 type PeeringConnectivitySpec struct {
 	// Rules defines the ordered list of network traffic rules.
@@ -105,7 +105,7 @@ type PeeringConnectivitySpec struct {
 }
 
 // PeeringConnectivityStatus defines the observed state of PeeringConnectivity.
-// It reflects the current status of the security policy enforcement.
+// It reflects the current status of the connectivity policy enforcement.
 type PeeringConnectivityStatus struct {
 	// Conditions represent the current state of the PeeringConnectivity resource.
 	// Each condition has a unique type and reflects the status of a specific aspect
@@ -126,7 +126,7 @@ type PeeringConnectivityStatus struct {
 // +kubebuilder:subresource:status
 
 // PeeringConnectivity is the Schema for the peeringconnectivities API.
-// It represents a security policy configuration for controlling network connectivity
+// It represents a connectivity policy configuration for controlling network connectivity
 // in a Liqo multi-cluster peering scenario. Each PeeringConnectivity resource is
 // typically created in a tenant namespace (e.g., liqo-tenant-<cluster-id>) and
 // defines firewall rules that control traffic between different resource groups.
@@ -138,7 +138,7 @@ type PeeringConnectivity struct {
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
 	// Spec defines the desired state of PeeringConnectivity.
-	// It contains the security rules to be enforced.
+	// It contains the connectivity rules to be enforced.
 	// +required
 	Spec PeeringConnectivitySpec `json:"spec"`
 

@@ -1,4 +1,4 @@
 ## Append samples of your project ##
 resources:
-- security_v1_peeringconnectivity.yaml
+- connectivity_v1_peeringconnectivity.yaml
 # +kubebuilder:scaffold:manifestskustomizesamples

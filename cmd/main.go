@@ -45,7 +45,7 @@ var (
 )
 
 // init registers all the required schemes for the controller.
-// This includes core Kubernetes types, Liqo types, and the security API types.
+// This includes core Kubernetes types, Liqo types, and the connectivity API types.
 func init() {
 	utils.RegisterScheme(scheme)
 	// +kubebuilder:scaffold:scheme

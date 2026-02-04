@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package v1 contains API Schema definitions for the security v1 API group.
+// Package v1 contains API Schema definitions for the connectivity v1 API group.
 //
-// This package defines the security custom resources, which enables
+// This package defines the connectivity custom resources, which enables
 // fine-grained network connectivity policies for Liqo multi-cluster environments.
 // The API allows users to control traffic flow between different resource groups
 // in a peering scenario, such as local cluster pods, remote cluster pods,

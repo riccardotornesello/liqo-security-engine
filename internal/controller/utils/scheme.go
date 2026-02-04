@@ -22,16 +22,16 @@ import (
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 
-	securityv1 "github.com/riccardotornesello/liqo-connectivity-engine/api/v1"
+	connectivityv1 "github.com/riccardotornesello/liqo-connectivity-engine/api/v1"
 )
 
 // RegisterScheme registers all required API schemes for the controller.
 // This includes core Kubernetes types, Liqo networking/IPAM/offloading types,
-// and the security API types.
+// and the connectivity API types.
 func RegisterScheme(scheme *runtime.Scheme) {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 	utilruntime.Must(networkingv1beta1.AddToScheme(scheme))
 	utilruntime.Must(ipamv1alpha1.AddToScheme(scheme))
 	utilruntime.Must(offloadingv1beta1.AddToScheme(scheme))
-	utilruntime.Must(securityv1.AddToScheme(scheme))
+	utilruntime.Must(connectivityv1.AddToScheme(scheme))
 }
