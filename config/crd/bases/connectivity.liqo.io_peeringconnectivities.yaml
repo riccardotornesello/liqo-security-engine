@@ -62,7 +62,6 @@ spec:
                         matching this rule.
                       enum:
                       - allow
-                      - deny
                       type: string
                     destination:
                       description: |-

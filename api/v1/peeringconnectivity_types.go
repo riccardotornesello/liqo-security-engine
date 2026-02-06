@@ -54,15 +54,12 @@ const (
 
 // Action defines the action to take when a firewall rule matches network traffic.
 //
-// +kubebuilder:validation:Enum=allow;deny
+// +kubebuilder:validation:Enum=allow
 type Action string
 
 const (
 	// ActionAllow permits the matched network traffic to pass through.
 	ActionAllow Action = "allow"
-
-	// ActionDeny blocks the matched network traffic.
-	ActionDeny Action = "deny"
 )
 
 // Party defines a participant in a network connectivity rule.

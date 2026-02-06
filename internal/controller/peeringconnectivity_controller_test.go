@@ -208,41 +208,6 @@ var _ = Describe("PeeringConnectivity Controller", func() {
 			}).Should(Equal(metav1.ConditionTrue))
 		})
 
-		It("should handle PeeringConnectivity with deny rules", func() {
-			By("creating a PeeringConnectivity with deny rules")
-			resource := &connectivityv1.PeeringConnectivity{
-				ObjectMeta: metav1.ObjectMeta{
-					Name:      resourceName,
-					Namespace: namespace,
-				},
-				Spec: connectivityv1.PeeringConnectivitySpec{
-					Rules: []connectivityv1.Rule{
-						{
-							Action: connectivityv1.ActionDeny,
-							Source: &connectivityv1.Party{Group: ptr.To(connectivityv1.ResourceGroupRemoteCluster)},
-						},
-					},
-				},
-			}
-			Expect(k8sClient.Create(ctx, resource)).To(Succeed())
-
-			By("Reconciling the created resource")
-			_, err := reconciler.Reconcile(ctx, reconcile.Request{
-				NamespacedName: namespacedName,
-			})
-			Expect(err).NotTo(HaveOccurred())
-
-			By("Verifying the FirewallConfiguration was created")
-			fwcfg := &networkingv1beta1.FirewallConfiguration{}
-			fwcfgName := types.NamespacedName{
-				Name:      clusterID + "-connectivity-fabric",
-				Namespace: namespace,
-			}
-			Eventually(func() error {
-				return k8sClient.Get(ctx, fwcfgName, fwcfg)
-			}).Should(Succeed())
-		})
-
 		It("should handle PeeringConnectivity with empty rules", func() {
 			By("creating a PeeringConnectivity with no rules")
 			resource := &connectivityv1.PeeringConnectivity{
@@ -365,7 +330,7 @@ var _ = Describe("PeeringConnectivity Controller", func() {
 					return err
 				}
 				resource.Spec.Rules = append(resource.Spec.Rules, connectivityv1.Rule{
-					Action: connectivityv1.ActionDeny,
+					Action: connectivityv1.ActionAllow,
 					Source: &connectivityv1.Party{Group: ptr.To(connectivityv1.ResourceGroupLocalCluster)},
 				})
 				return k8sClient.Update(ctx, resource)
