@@ -53,3 +53,17 @@ spec:
       destination:
         group: offloaded
       action: "allow"
+
+    # Rules 4+5: Allow traffic from leaf group to offloaded and vice versa
+    # This allows communication between two different providers.
+    - source:
+        group: leaf
+      destination:
+        group: offloaded
+      action: "allow"
+
+    - source:
+        group: offloaded
+      destination:
+        group: leaf
+      action: "allow"

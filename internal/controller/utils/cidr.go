@@ -43,7 +43,7 @@ func GetCurrentClusterPodCIDR(ctx context.Context, cl client.Client) (string, er
 		return "", err
 	}
 
-	return string(network.Spec.CIDR), nil
+	return string(network.Status.CIDR), nil
 }
 
 // GetRemoteClusterPodCIDR retrieves the pod CIDR for a remote peered cluster.
@@ -54,6 +54,21 @@ func GetRemoteClusterPodCIDR(ctx context.Context, cl client.Client, clusterID st
 	if err := cl.Get(ctx, client.ObjectKey{
 		Namespace: GetClusterNamespace(clusterID),
 		Name:      fmt.Sprintf("%s-pod", clusterID),
+	}, &network); err != nil {
+		return "", err
+	}
+
+	return string(network.Status.CIDR), nil
+}
+
+// GetRemoteClusterExternalCIDR retrieves the external CIDR for the remote cluster.
+// It reads the Network resource in the liqo namespace to obtain the CIDR.
+func GetRemoteClusterExternalCIDR(ctx context.Context, cl client.Client, clusterID string) (string, error) {
+	var network ipamv1alpha1.Network
+
+	if err := cl.Get(ctx, client.ObjectKey{
+		Namespace: GetClusterNamespace(clusterID),
+		Name:      fmt.Sprintf("%s-external", clusterID),
 	}, &network); err != nil {
 		return "", err
 	}

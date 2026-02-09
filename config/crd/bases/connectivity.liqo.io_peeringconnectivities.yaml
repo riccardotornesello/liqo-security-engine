@@ -75,6 +75,7 @@ spec:
                           enum:
                           - local-cluster
                           - remote-cluster
+                          - leaf
                           - offloaded
                           - vc-local
                           - vc-remote
@@ -101,6 +102,7 @@ spec:
                           enum:
                           - local-cluster
                           - remote-cluster
+                          - leaf
                           - offloaded
                           - vc-local
                           - vc-remote

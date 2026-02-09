@@ -22,7 +22,7 @@ import (
 // It categorizes different types of pods and network entities to enable fine-grained
 // network connectivity policy management across cluster boundaries.
 //
-// +kubebuilder:validation:Enum=local-cluster;remote-cluster;offloaded;vc-local;vc-remote;private-subnets
+// +kubebuilder:validation:Enum=local-cluster;remote-cluster;leaf;offloaded;vc-local;vc-remote;private-subnets
 type ResourceGroup string
 
 const (
@@ -31,6 +31,9 @@ const (
 
 	// ResourceGroupRemoteCluster represents pods running in the remote cluster's pod CIDR.
 	ResourceGroupRemoteCluster ResourceGroup = "remote-cluster"
+
+	// ResourceGroupLeaf represents the external subnet
+	ResourceGroupLeaf ResourceGroup = "leaf"
 
 	// ResourceGroupOffloaded represents pods that have been offloaded from a consumer cluster
 	// and are running on a provider cluster.

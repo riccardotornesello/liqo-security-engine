@@ -99,6 +99,17 @@ func ForgeNetworkPolicyPeer(ctx context.Context, cl client.Client, clusterID str
 					CIDR: cidr,
 				},
 			}}, nil
+		case connectivityv1.ResourceGroupLeaf:
+			cidr, err := utils.GetRemoteClusterExternalCIDR(ctx, cl, clusterID)
+			if err != nil {
+				return nil, err
+			}
+
+			return []networkingv1.NetworkPolicyPeer{{
+				IPBlock: &networkingv1.IPBlock{
+					CIDR: cidr,
+				},
+			}}, nil
 		case connectivityv1.ResourceGroupOffloaded:
 			return []networkingv1.NetworkPolicyPeer{{
 				NamespaceSelector: &metav1.LabelSelector{
