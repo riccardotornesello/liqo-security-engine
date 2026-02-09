@@ -22,7 +22,7 @@ import (
 // It categorizes different types of pods and network entities to enable fine-grained
 // network connectivity policy management across cluster boundaries.
 //
-// +kubebuilder:validation:Enum=local-cluster;remote-cluster;leaf;offloaded;vc-local;vc-remote;private-subnets
+// +kubebuilder:validation:Enum=local-cluster;remote-cluster;leaf;offloaded;vc-local;vc-remote;internet
 type ResourceGroup string
 
 const (
@@ -50,9 +50,9 @@ const (
 	// For consumer only!
 	ResourceGroupVcRemote ResourceGroup = "vc-remote"
 
-	// PrivateSubnets represents ALL private subnet ranges defined by RFC1918.
-	// This group is used to match traffic destined to private IP ranges.
-	ResourceGroupPrivateSubnets ResourceGroup = "private-subnets"
+	// Internet represents all public IP ranges except those described in RFC1918.
+	// This group is used to match traffic destined to public IP addresses.
+	ResourceGroupInternet ResourceGroup = "internet"
 )
 
 // Action defines the action to take when a firewall rule matches network traffic.

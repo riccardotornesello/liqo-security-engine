@@ -48,5 +48,5 @@ var ResourceGroupFuncts = map[connectivityv1.ResourceGroup]groupFuncts{
 	connectivityv1.ResourceGroupVcLocal:  ResourceGroupVcLocal,
 	connectivityv1.ResourceGroupVcRemote: ResourceGroupVcRemote,
 
-	connectivityv1.ResourceGroupPrivateSubnets: ResourceGroupPrivateSubnets,
+	connectivityv1.ResourceGroupInternet: ResourceGroupInternet,
 }

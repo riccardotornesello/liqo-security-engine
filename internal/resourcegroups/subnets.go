@@ -21,9 +21,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-// private-subnets: Matches traffic destined to all private subnet ranges defined by RFC1918.
-// This doesn't need a set because it uses simple CIDR matches.
-var ResourceGroupPrivateSubnets = groupFuncts{
+// internet: Matches traffic destined to all public IP ranges except those described in RFC1918.
+var ResourceGroupInternet = groupFuncts{
 	MakeSets: func(ctx context.Context, cl client.Client, clusterID string) ([]networkingv1beta1firewall.Set, error) {
 		return []networkingv1beta1firewall.Set{{
 			Name:    "privatesubnets",
@@ -41,7 +40,7 @@ var ResourceGroupPrivateSubnets = groupFuncts{
 				Value:    "@privatesubnets",
 				Position: position,
 			},
-			Op: networkingv1beta1firewall.MatchOperationEq,
+			Op: networkingv1beta1firewall.MatchOperationNeq,
 		}}, nil
 	},
 }

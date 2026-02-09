@@ -135,7 +135,17 @@ func ForgeNetworkPolicyPeer(ctx context.Context, cl client.Client, clusterID str
 					},
 				},
 			}}, nil
-		// TODO: connectivityv1.ResourceGroupPrivateSubnets
+		case connectivityv1.ResourceGroupInternet:
+			return []networkingv1.NetworkPolicyPeer{{
+				IPBlock: &networkingv1.IPBlock{
+					CIDR: "0.0.0.0/0",
+					Except: []string{
+						"10.0.0.0/8",
+						"172.16.0.0/12",
+						"192.168.0.0/16",
+					},
+				},
+			}}, nil
 		default:
 			return nil, fmt.Errorf("unsupported resource group: %s", *peer.Group)
 		}

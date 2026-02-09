@@ -79,7 +79,7 @@ spec:
                           - offloaded
                           - vc-local
                           - vc-remote
-                          - private-subnets
+                          - internet
                           type: string
                         namespace:
                           description: Namespace specifies the Kubernetes namespace
@@ -106,7 +106,7 @@ spec:
                           - offloaded
                           - vc-local
                           - vc-remote
-                          - private-subnets
+                          - internet
                           type: string
                         namespace:
                           description: Namespace specifies the Kubernetes namespace
