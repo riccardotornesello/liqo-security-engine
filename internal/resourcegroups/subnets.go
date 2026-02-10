@@ -26,7 +26,7 @@ var ResourceGroupInternet = groupFuncts{
 	MakeSets: func(ctx context.Context, cl client.Client, clusterID string) ([]networkingv1beta1firewall.Set, error) {
 		return []networkingv1beta1firewall.Set{{
 			Name:    "privatesubnets",
-			KeyType: networkingv1beta1firewall.SetDataTypeIPAddr,
+			KeyType: networkingv1beta1firewall.SetDataTypeIPCIDR,
 			Elements: []networkingv1beta1firewall.SetElement{
 				{Key: "10.0.0.0/8"},
 				{Key: "172.16.0.0/12"},
